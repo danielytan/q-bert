@@ -1,15 +1,15 @@
-name:                brick-tac-toe
+name:                q-bert
 version:             0.1.0.0
 license:             MIT
 license-file:        LICENSE
-author:              Ranjit Jhala
-maintainer:          rjhala@eng.ucsd.edu
+author:              Daniel Tan
+maintainer:          danielytan1@gmail.com
 category:            Game
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
-executable brick-tac-toe
+executable q-bert
   main-is:             Main.hs
   build-depends:       base >=4.9, 
                        random >=1.1 && <1.2,
