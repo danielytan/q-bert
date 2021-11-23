@@ -27,6 +27,7 @@ data PlayState = PS
   , psBoard  :: Board.Board     -- ^ current board
   , psTurn   :: Board.XO        -- ^ whose turn 
   , psPos    :: Board.Pos       -- ^ current cursor
+  , psPos2   :: Board.Pos       -- second cursor
   , psResult :: Board.Result () -- ^ result      
   } 
 
@@ -37,7 +38,8 @@ init n = PS
   , psScore  = Score.init n
   , psBoard  = Board.init
   , psTurn   = Board.X
-  , psPos    = head Board.positions 
+  , psPos    = Board.Pos 2 1
+  , psPos2   = Board.Pos 5 4
   , psResult = Board.Cont ()
   }
 
@@ -45,6 +47,11 @@ isCurr :: PlayState -> Int -> Int -> Bool
 isCurr s r c = Board.pRow p == r && Board.pCol p == c
   where 
     p = psPos s 
+
+isCurr2 :: PlayState -> Int -> Int -> Bool
+isCurr2 s r c = Board.pRow p == r && Board.pCol p == c
+  where 
+    p = psPos2 s 
 
 next :: PlayState -> Board.Result Board.Board -> Either (Board.Result ()) PlayState
 next s Board.Retry     = Right s

@@ -32,6 +32,7 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
   | isCurr s r c = fillCell blue raw
+  | isCurr2 s r c = fillCell red raw
   | r > c = fillCell yellow raw 
   | otherwise    = raw 
   where

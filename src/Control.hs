@@ -3,6 +3,7 @@ module Control where
 import Brick hiding (Result)
 import qualified Graphics.Vty as V
 import qualified Brick.Types as T
+import System.Random
 
 import Model
 import Model.Board
@@ -14,7 +15,7 @@ import Model.Player
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of 
-  AppEvent Tick                   -> nextS s =<< liftIO (play O s)
+  AppEvent Tick                   -> moveBot s 3 --nextS s =<< liftIO (play O s)
   T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move up    s)
   T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (move down  s)
@@ -22,6 +23,15 @@ control s ev = case ev of
   T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (move right s)
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
+
+
+moveBot s 1 = Brick.continue (move2 up    s)
+moveBot s 2 = Brick.continue (move2 down  s)
+moveBot s 3 = Brick.continue (move2 left  s)
+moveBot s 4 = Brick.continue (move2 right s)
+moveBot s _ = Brick.continue s
+
+move2 f s = s { psPos2 = f (psPos s) }
 
 -------------------------------------------------------------------------------
 move :: (Pos -> Pos) -> PlayState -> PlayState
@@ -45,7 +55,7 @@ getStrategy O s = plStrat (psO s)
 -------------------------------------------------------------------------------
 nextS :: PlayState -> Result Board -> EventM n (Next PlayState)
 -------------------------------------------------------------------------------
-nextS s b = case next s b of
+nextS s b = case Model.next s b of
   Right s' -> continue s'
   Left res -> halt (s { psResult = res }) 
 
