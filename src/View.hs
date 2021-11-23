@@ -47,8 +47,7 @@ mkCell' s r c = center (mkXO xoMb)
     --xoMb      = psBoard s ! Pos r c
     xoMb 
        | isCurr s r c   = Just X 
-    --   | r > c     = Just O 
-       | otherwise = Nothing
+       | otherwise = psBoard s ! Pos r c
 
 mkXO :: Maybe XO -> Widget n
 mkXO Nothing  = blockB
@@ -62,11 +61,11 @@ blockX = vBox [ str " ___   "
               , str "||  __|"
               , str "||_|   " 
               , str "|_ |_  "]
-blockO = vBox [ str "OOOOO"
-              , str "O   O"
-              , str "O   O"
-              , str "O   O"
-              , str "OOOOO"]
+blockO = vBox [ str "_____"
+              , str "' ' |"
+              , str " ___|"
+              , str "|    "
+              , str "|___|"]
 
 vTile :: [Widget n] -> Widget n
 vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])
