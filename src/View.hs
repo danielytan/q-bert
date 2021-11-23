@@ -31,8 +31,8 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
-  | isCurr s r c = fillCell blue raw
-  | isCurr2 s r c = fillCell red raw
+  | isCurrPlayer s r c = fillCell blue raw
+  | isCurrEnemy s r c = fillCell red raw
   | r > c = fillCell yellow raw 
   | otherwise    = raw 
   where
@@ -47,7 +47,7 @@ mkCell' s r c = center (mkXO xoMb)
   where 
     --xoMb      = psBoard s ! Pos r c
     xoMb 
-       | isCurr s r c   = Just X 
+       | isCurrPlayer s r c   = Just X 
        | otherwise = psBoard s ! Pos r c
 
 mkXO :: Maybe XO -> Widget n

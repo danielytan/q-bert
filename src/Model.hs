@@ -27,7 +27,7 @@ data PlayState = PS
   , psBoard  :: Board.Board     -- ^ current board
   , psTurn   :: Board.XO        -- ^ whose turn 
   , psPos    :: Board.Pos       -- ^ current cursor
-  , psPos2   :: Board.Pos       -- second cursor
+  , psPos2   :: Board.Pos       -- ^ second cursor
   , psResult :: Board.Result () -- ^ result      
   } 
 
@@ -39,17 +39,17 @@ init n = PS
   , psBoard  = Board.init
   , psTurn   = Board.X
   , psPos    = Board.Pos 2 1
-  , psPos2   = Board.Pos 5 4
+  , psPos2   = Board.Pos 5 2
   , psResult = Board.Cont ()
   }
 
-isCurr :: PlayState -> Int -> Int -> Bool
-isCurr s r c = Board.pRow p == r && Board.pCol p == c
+isCurrPlayer :: PlayState -> Int -> Int -> Bool
+isCurrPlayer s r c = Board.pRow p == r && Board.pCol p == c
   where 
     p = psPos s 
 
-isCurr2 :: PlayState -> Int -> Int -> Bool
-isCurr2 s r c = Board.pRow p == r && Board.pCol p == c
+isCurrEnemy :: PlayState -> Int -> Int -> Bool
+isCurrEnemy s r c = Board.pRow p == r && Board.pCol p == c
   where 
     p = psPos2 s 
 

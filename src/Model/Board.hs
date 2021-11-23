@@ -105,7 +105,7 @@ isFull b = M.size b == dim * dim
 
 up :: Pos -> Pos 
 up p = p 
-  { pRow = max (pCol p + 1) (pRow p - 1)  -- 
+  { pRow = max (pCol p + 1) (pRow p - 1)
   } 
 
 down :: Pos -> Pos
@@ -121,7 +121,7 @@ left p = p
 right :: Pos -> Pos 
 right p = p 
   { pCol = min (pRow p - 1) (pCol p + 1) 
-  } 
+  }
 
 boardWinner :: Result a -> Maybe XO
 boardWinner (Win xo) = Just xo
