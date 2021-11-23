@@ -48,7 +48,7 @@ data Pos = Pos
 board ! pos = M.lookup pos board
 
 dim :: Int
-dim = 3
+dim = 6
 
 positions :: [Pos]
 positions = [ Pos r c | r <- [1..dim], c <- [1..dim] ] 
@@ -105,7 +105,7 @@ isFull b = M.size b == dim * dim
 
 up :: Pos -> Pos 
 up p = p 
-  { pRow = max 1 (pRow p - 1) 
+  { pRow = max (pCol p + 1) (pRow p - 1)  -- 
   } 
 
 down :: Pos -> Pos
@@ -120,7 +120,7 @@ left p = p
 
 right :: Pos -> Pos 
 right p = p 
-  { pCol = min dim (pCol p + 1) 
+  { pCol = min (pRow p - 1) (pCol p + 1) 
   } 
 
 boardWinner :: Result a -> Maybe XO
