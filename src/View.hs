@@ -31,13 +31,14 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
-  | r > c = fillCell raw 
+  | isCurr s r c = fillCell blue raw
+  | r > c = fillCell yellow raw 
   | otherwise    = raw 
   where
     raw = mkCell' s r c
 
-fillCell :: Widget n -> Widget n
-fillCell = modifyDefAttr (`withStyle` reverseVideo)
+fillCell :: Color -> Widget n -> Widget n
+fillCell c = modifyDefAttr (`withBackColor` c)
 
 mkCell' :: PlayState -> Int -> Int -> Widget n
 -- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
