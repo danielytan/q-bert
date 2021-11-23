@@ -48,7 +48,8 @@ mkCell' s r c = center (mkXO xoMb)
     --xoMb      = psBoard s ! Pos r c
     xoMb 
        | isCurrPlayer s r c   = Just X 
-       | otherwise = psBoard s ! Pos r c
+       | isCurrEnemy s r c    = Just O
+       | otherwise            = psBoard s ! Pos r c
 
 mkXO :: Maybe XO -> Widget n
 mkXO Nothing  = blockB

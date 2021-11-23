@@ -14,7 +14,7 @@ import Model.Player
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of 
   AppEvent Tick                   -> nextS s =<< liftIO (play O s)
-  T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
+  -- T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move up    s)
   T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (move down  s)
   T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (move left  s)
