@@ -33,6 +33,7 @@ mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
   | isCurrPlayer s r c = fillCell blue raw
   | isCurrEnemy s r c = fillCell red raw
+  | isVisited s r c = fillCell blue raw
   | r > c = fillCell yellow raw 
   | otherwise    = raw 
   where

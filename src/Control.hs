@@ -15,19 +15,20 @@ control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of 
   AppEvent Tick                   -> nextS s =<< liftIO (play O s)
   -- T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
-  T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move up    s)
-  T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (move down  s)
-  T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (move left  s)
-  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (move right s)
+  T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move up addVisited   s)
+  T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (move down addVisited s)
+  T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (move left addVisited s)
+  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (move right addVisited s)
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
 
 -------------------------------------------------------------------------------
-move :: (Pos -> Pos) -> PlayState -> PlayState
+move :: (Pos -> Pos) -> (Vis -> Pos -> Vis) -> PlayState -> PlayState
 -------------------------------------------------------------------------------
-move f s = s { 
-  psPos = f (psPos s),
-  psPos2 = f (psPos2 s)
+move f1 f2 s = s { 
+  psPos = f1 (psPos s),
+  psPos2 = f1 (psPos2 s),
+  boardVis = if checkWin (f2 (boardVis s) (psPos s)) then Vis [] else f2 (boardVis s) (psPos s) 
 }
 
 -------------------------------------------------------------------------------

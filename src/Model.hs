@@ -5,6 +5,7 @@ import Prelude hiding ((!!))
 import qualified Model.Board  as Board
 import qualified Model.Score  as Score
 import qualified Model.Player as Player
+import Text.ParserCombinators.ReadP (chainl)
 
 -------------------------------------------------------------------------------
 -- | Ticks mark passing of time: a custom event that we constantly stream
@@ -28,6 +29,7 @@ data PlayState = PS
   , psTurn   :: Board.XO        -- ^ whose turn 
   , psPos    :: Board.Pos       -- ^ current cursor
   , psPos2   :: Board.Pos       -- ^ second cursor
+  , boardVis  :: Board.Vis
   , psResult :: Board.Result () -- ^ result      
   } 
 
@@ -40,6 +42,7 @@ init n = PS
   , psTurn   = Board.X
   , psPos    = Board.Pos 2 1
   , psPos2   = Board.Pos 5 2
+  , boardVis  = Board.Vis []
   , psResult = Board.Cont ()
   }
 
@@ -52,6 +55,10 @@ isCurrEnemy :: PlayState -> Int -> Int -> Bool
 isCurrEnemy s r c = Board.pRow p == r && Board.pCol p == c
   where 
     p = psPos2 s 
+
+isVisited :: PlayState -> Int -> Int -> Bool
+isVisited s r c = Board.checkVis (Board.visited (boardVis s)) (Board.Pos r c)
+
 
 next :: PlayState -> Board.Result Board.Board -> Either (Board.Result ()) PlayState
 next s Board.Retry     = Right s
