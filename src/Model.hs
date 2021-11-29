@@ -44,7 +44,7 @@ data PlayState = PS
 init :: Int -> IO PlayState
 init n = do
   rg <- newStdGen
-  let lst = fromList (randomRs ((0, 1)::(Integer, Integer)) rg)
+  let lst = fromList (randomRs ((0, 4)::(Integer, Integer)) rg)
   let g = PS { psX      = Player.human
   , psO      = Player.rando
   , psScore  = Score.init n

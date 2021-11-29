@@ -14,7 +14,7 @@ import Model.Player
 -------------------------------------------------------------------------------
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
-control s ev = case ev of 
+control s ev = case ev of
   AppEvent Tick                   -> Brick.continue (step s)--nextS s =<< liftIO (play O s)
   -- T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move UP s)
@@ -30,17 +30,17 @@ step s = move (lastMove s) s
 --- -1
 ---
 markVist s = s {
-  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s) 
+  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s)
 }
 
-updateIter s = if mod newIter 5 ==  0 
+updateIter s = if mod newIter 5 ==  0
   then (addEnemy s) {
     numIters = newIter
   }
   else s{
     numIters = newIter
   }
-  where newIter = (numIters s) +1
+  where newIter = numIters s +1
 
 addEnemy s = s {
   beans = enemy'
@@ -59,7 +59,7 @@ updateEnemy s = s {
         newEnemy = randomMove enemy nextRandom
 
 nextInt 0 _ = []
-nextInt num (f:|fs) = f:(nextInt (num-1) fs)
+nextInt num (f:|fs) = f:nextInt (num-1) fs
 
 rmLst 0 fs = fs
 rmLst num (_:|fs) = rmLst (num-1) fs
@@ -78,10 +78,12 @@ l = [0, 1]
 ---
 randomMove _ [] = []
 randomMove [] _ = []
-randomMove (k:ks) (l:ls) = if l == 0
-  then up(k):(randomMove ks ls)
-  else right(k):(randomMove ks ls)
-  
+randomMove (k:ks) (l:ls)
+  | l == 0 = up(k):(randomMove ks ls)
+  | l == 1 = down(k):(randomMove ks ls)
+  | l == 2 = left(k):(randomMove ks ls)
+  | otherwise = right(k):(randomMove ks ls)
+
 -------------------------------------------------------------------------------
 move :: Direct -> PlayState -> PlayState
 -------------------------------------------------------------------------------
@@ -92,13 +94,13 @@ move d s
     }
     | d == DOWN = s''' {
       lastMove = d,
-      
+
       psPos = down (psPos s)
     }
     | d == LEFT = s''' {
       lastMove = d,
       psPos = left (psPos s)
-    } 
+    }
     | d == RIGHT = s''' {
       lastMove = d,
       psPos = right (psPos s)
@@ -113,13 +115,13 @@ move d s
 play :: XO -> PlayState -> IO (Result Board)
 -------------------------------------------------------------------------------
 play xo s
-  | psTurn s == xo = put (psBoard s) xo <$> getPos xo s 
+  | psTurn s == xo = put (psBoard s) xo <$> getPos xo s
   | otherwise      = return Retry
 
 getPos :: XO -> PlayState -> IO Pos
 getPos xo s = getStrategy xo s (psPos s) (psBoard s) xo
 
-getStrategy :: XO -> PlayState -> Strategy 
+getStrategy :: XO -> PlayState -> Strategy
 getStrategy X s = plStrat (psX s)
 getStrategy O s = plStrat (psO s)
 
@@ -128,6 +130,6 @@ nextS :: PlayState -> Result Board -> EventM n (Next PlayState)
 -------------------------------------------------------------------------------
 nextS s b = case Model.next s b of
   Right s' -> continue s'
-  Left res -> halt (s { psResult = res }) 
+  Left res -> halt (s { psResult = res })
 
 
