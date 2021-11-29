@@ -25,7 +25,7 @@ control s ev = case ev of
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
 
-step s = move (lastMove s) s
+step s = updateEnemy s
 
 --- >>> 2 `mod` (-3)
 --- -1
@@ -97,27 +97,26 @@ randomMove' k l
 move :: Direct -> PlayState -> PlayState
 -------------------------------------------------------------------------------
 move d s
-    | d == UP = s''' {
+    | d == UP = s'' {
       lastMove = d,
       psPos = up (psPos s)
     }
-    | d == DOWN = s''' {
+    | d == DOWN = s'' {
       lastMove = d,
 
       psPos = down (psPos s)
     }
-    | d == LEFT = s''' {
+    | d == LEFT = s'' {
       lastMove = d,
       psPos = left (psPos s)
     }
-    | d == RIGHT = s''' {
+    | d == RIGHT = s'' {
       lastMove = d,
       psPos = right (psPos s)
     }
     | otherwise = s''
   where s' = markVist s
         s'' = updateIter s'
-        s''' = updateEnemy s''
 
 
 -------------------------------------------------------------------------------
