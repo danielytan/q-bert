@@ -25,6 +25,7 @@ module Model.Board
   , down
   , left
   , right
+  , Direct
   )
   where
 
@@ -131,6 +132,7 @@ isFull b = M.size b == dim * dim
 -- | Moves 
 -------------------------------------------------------------------------------
 
+type Direct = Pos -> Pos
 up :: Pos -> Pos
 up p = p
   { pRow = max (pCol p + 1) (pRow p - 1)

@@ -7,6 +7,7 @@ import System.Random -- (Random(randomRIO))
 -- | Players and Strategies ---------------------------------------------------
 -------------------------------------------------------------------------------
 
+data Direct = UP | DOWN | LEFT | RIGHT deriving (Eq, Show)
 data Player = Player 
   { plName  :: String 
   , plStrat :: Strategy
