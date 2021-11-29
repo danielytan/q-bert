@@ -7,10 +7,11 @@ Implementation of Q*Bert in Haskell using brick.
 
 * Compile with `stack build`
 * Play with `stack run`
-* 
+
 ## TODO
 
-- [ ] Convert starter code to work with q-bert logic
+- [x] Convert starter code to work with q-bert logic
+- [ ] Make the view isometric like in the original game
 
 # Proposal
 We aim to implement a simple version of the classic retro game Q*Bert in Haskell using the [brick](https://github.com/jtdaugherty/brick/) library.
