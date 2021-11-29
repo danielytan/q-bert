@@ -15,7 +15,9 @@ executable q-bert
                        random >=1.1 && <1.2,
                        containers,
                        vty, 
-                       brick
+                       brick,
+                       microlens,
+                       microlens-th
   hs-source-dirs:      src
   other-modules:       View, 
                        Control,
