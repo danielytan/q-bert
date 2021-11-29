@@ -25,7 +25,6 @@ module Model.Board
   , down
   , left
   , right
-  , Direct
   )
   where
 
@@ -152,6 +151,12 @@ right :: Pos -> Pos
 right p = p
   { pCol = min (pRow p - 1) (pCol p + 1)
   }
+
+print_direct :: (Pos -> Pos) -> String
+print_direct up = "UP"
+print_direct down = "DOWN"
+print_direct left = "LEFT"
+print_direct right = "RIGHT"
 
 boardWinner :: Result a -> Maybe XO
 boardWinner (Win xo) = Just xo

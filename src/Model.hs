@@ -31,7 +31,7 @@ data PlayState = PS
   , psPos2   :: Board.Pos       -- ^ second cursor
   , boardVis  :: Board.Vis
   , psResult :: Board.Result () -- ^ result    
-  , lastMove :: Board.Direct  
+  , lastMove :: Player.Direct 
   } 
 
 init :: Int -> PlayState
@@ -45,7 +45,7 @@ init n = PS
   , psPos2   = Board.Pos 5 2
   , boardVis  = Board.Vis []
   , psResult = Board.Cont ()
-  , lastMove = Board.down
+  , lastMove = Player.DOWN
   }
 
 isCurrPlayer :: PlayState -> Int -> Int -> Bool
