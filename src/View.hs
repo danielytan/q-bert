@@ -32,9 +32,10 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
   | isCurrPlayer s r c = fillCell blue raw
-  | isCurrSnake s r c = fillCell red raw
-  | isCurrEnemy s r c = fillCell red raw
+  | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy blue red raw
   | isVisited s r c = fillCell blue raw
+  | isCurrSnake s r c = fillEnemy yellow red raw
+  | isCurrEnemy s r c = fillEnemy yellow red raw
   | r > c = fillCell yellow raw 
   | otherwise    = raw 
   where
@@ -42,6 +43,9 @@ mkCell s r c
 
 fillCell :: Color -> Widget n -> Widget n
 fillCell c = modifyDefAttr (`withBackColor` c)
+
+fillEnemy c1 c2 raw = modifyDefAttr (`withForeColor` c2) (modifyDefAttr (`withBackColor` c1) raw)
+
 
 mkCell' :: PlayState -> Int -> Int -> Widget n
 -- mkCell' _ r c = center (str (printf "(%d, %d)" r c))

@@ -48,7 +48,7 @@ addEnemy s n = s {
   beans = enemy'
 }
   where enemy = beans s
-        enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) (fromInteger r)]
+        enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) ((fromInteger r) - 1)]
 updateEnemy s = s {
   beans = newEnemy,
   psPos2 = newSnake,
