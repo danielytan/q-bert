@@ -56,10 +56,13 @@ updateEnemy s = s {
 }
   where fs = nextInteger s
         enemy = beans s
-        nextRandom = nextInt 1 fs
-        newFs = rmLst 1 fs
+        len = length enemy
+        nextRandom = nextInt len fs
+        newFs = rmLst len fs
         newEnemy = moveDown enemy nextRandom
-        newSnake = randomMove' (psPos2 s) (head nextRandom)
+        nextRandom' = nextInt 1 fs
+        newFs' = rmLst 1 fs
+        newSnake = randomMove' (psPos2 s) (head nextRandom')
 
 nextInt 0 _ = []
 nextInt num (f:|fs) = f:nextInt (num-1) fs
