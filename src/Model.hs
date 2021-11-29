@@ -29,6 +29,8 @@ data PlayState = PS
   { psX      :: Player.Player   -- ^ player X info
   , psO      :: Player.Player   -- ^ player O info
   , psScore  :: Score.Score     -- ^ current score
+  , psWins   :: Int
+  , psDeaths :: Int
   , psBoard  :: Board.Board     -- ^ current board
   , psTurn   :: Board.Characters        -- ^ whose turn 
   , psPos    :: Board.Pos       -- ^ current cursor
@@ -49,6 +51,8 @@ init n = do
     psX      = Player.human
   , psO      = Player.rando
   , psScore  = Score.init n
+  , psWins   = 0
+  , psDeaths = 0
   , psBoard  = Board.init
   , psTurn   = Board.MAIN
   , psPos    = Board.Pos 2 1
@@ -73,7 +77,7 @@ checkDeath s =
   if checkLose s then
     -- Do death stuff here
     s { 
-        psScore  = Score.init 0
+        psDeaths = psDeaths s + 1
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
       , psPos    = Board.Pos 2 1

@@ -22,7 +22,7 @@ view' s =
       vTile [ mkRow s row | row <- [1..dim] ]
 
 header :: PlayState -> String
-header s = printf "Direction: %s, Turn = %s, row = %d, col = %d" (show (lastMove s)) (show (psTurn s)) (pRow p) (pCol p)
+header s = printf "Wins: %s, Deaths = %s, row = %d, col = %d" (show (psWins s)) (show (psDeaths s)) (pRow p) (pCol p)
   where 
     p    = psPos s
 

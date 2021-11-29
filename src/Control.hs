@@ -33,7 +33,8 @@ stepPlayer dir s = checkDeath (move dir s)
 --- -1
 ---
 markVist s = s {
-  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s)
+  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s),
+  psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s
 }
 
 updateIter s = if mod newIter 5 ==  0
