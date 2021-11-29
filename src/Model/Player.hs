@@ -15,7 +15,7 @@ data Player = Player
 
 type Strategy = Pos     -- ^ current cursor
              -> Board   -- ^ current board
-             -> XO      -- ^ naught or cross
+             -> Characters       -- ^ naught or cross
              -> IO Pos  -- ^ next move
 
 human :: Player 

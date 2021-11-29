@@ -2,7 +2,7 @@
 module Model.Board
   ( -- * Types
     Board
-  , XO (..)
+  , Characters (..)
   , Pos (..)
   , Vis (..)
   , Result (..)
@@ -15,7 +15,6 @@ module Model.Board
   , positions
   , emptyPositions
   , boardWinner
-  , flipXO
   , checkVis
   , addVisited
   , checkWin
@@ -35,11 +34,12 @@ import qualified Data.Map as M
 -- | Board --------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-type Board = M.Map Pos XO
+type Board = M.Map Pos Characters
 
-data XO
-  = X
-  | O
+data Characters
+  = MAIN
+  | SNAKE
+  | BEAN
   deriving (Eq, Show)
 
 data Pos = Pos
@@ -48,7 +48,7 @@ data Pos = Pos
   }
   deriving (Eq, Ord, Show)
 
-(!) :: Board -> Pos -> Maybe XO
+(!) :: Board -> Pos -> Maybe Characters
 board ! pos = M.lookup pos board
 
 dim :: Int
@@ -93,12 +93,12 @@ init = M.empty
 
 data Result a
   = Draw
-  | Win XO
+  | Win Characters
   | Retry
   | Cont a
   deriving (Eq, Functor, Show)
 
-put :: Board -> XO -> Pos -> Result Board
+put :: Board -> Characters -> Pos -> Result Board
 put board xo pos = case M.lookup pos board of
   Just _  -> Retry
   Nothing -> result (M.insert pos xo board)
@@ -106,14 +106,14 @@ put board xo pos = case M.lookup pos board of
 result :: Board -> Result Board
 result b
   | isFull b  = Draw
-  | wins b X  = Win  X
-  | wins b O  = Win  O
+  | wins b MAIN  = Win  MAIN
+  | wins b SNAKE  = Win  SNAKE
   | otherwise = Cont b
 
-wins :: Board -> XO -> Bool
+wins :: Board -> Characters -> Bool
 wins b xo = or [ winsPoss b xo ps | ps <- winPositions ]
 
-winsPoss :: Board -> XO -> [Pos] -> Bool
+winsPoss :: Board -> Characters -> [Pos] -> Bool
 winsPoss b xo ps = and [ b!p == Just xo | p <- ps ]
 
 winPositions :: [[Pos]]
@@ -158,11 +158,7 @@ print_direct down = "DOWN"
 print_direct left = "LEFT"
 print_direct right = "RIGHT"
 
-boardWinner :: Result a -> Maybe XO
+boardWinner :: Result a -> Maybe Characters
 boardWinner (Win xo) = Just xo
 boardWinner _        = Nothing
-
-flipXO :: XO -> XO
-flipXO X = O
-flipXO O = X
 

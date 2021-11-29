@@ -32,6 +32,7 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
   | isCurrPlayer s r c = fillCell blue raw
+  | isCurrSnake s r c = fillCell red raw
   | isCurrEnemy s r c = fillCell red raw
   | isVisited s r c = fillCell blue raw
   | r > c = fillCell yellow raw 
@@ -48,27 +49,35 @@ mkCell' s r c = center (mkXO xoMb)
   where 
     --xoMb      = psBoard s ! Pos r c
     xoMb 
-       | isCurrPlayer s r c   = Just X 
-       | isCurrEnemy s r c    = Just O
+       | isCurrPlayer s r c   = Just MAIN 
+       | isCurrSnake s r c    = Just SNAKE
+       | isCurrEnemy s r c    = Just BEAN
        | otherwise            = psBoard s ! Pos r c
 
-mkXO :: Maybe XO -> Widget n
+mkXO :: Maybe Characters -> Widget n
 mkXO Nothing  = blockB
-mkXO (Just X) = blockX
-mkXO (Just O) = blockO
+mkXO (Just MAIN) = blockChar
+mkXO (Just SNAKE) = blockSnake
+mkXO (Just BEAN) = blockBean
 
-blockB, blockX, blockO :: Widget n
+
+blockB, blockChar, blockSnake, blockBean :: Widget n
 blockB = vBox (replicate 5 (str "     "))
-blockX = vBox [ str " ___   "
+blockChar = vBox [ str " ___   "
               , str "||  |_ "
               , str "||  __|"
               , str "||_|   " 
               , str "|_ |_  "]
-blockO = vBox [ str "_____"
+blockSnake = vBox [ str "_____"
               , str "' ' |"
               , str " ___|"
               , str "|    "
               , str "|___|"]
+blockBean = vBox [ str "______"
+              ,   str "| _  _ |"
+              ,   str "|( )( )|"
+              ,   str "| ____ | "
+              ,   str "|______|"]
 
 vTile :: [Widget n] -> Widget n
 vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])

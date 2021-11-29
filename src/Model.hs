@@ -30,7 +30,7 @@ data PlayState = PS
   , psO      :: Player.Player   -- ^ player O info
   , psScore  :: Score.Score     -- ^ current score
   , psBoard  :: Board.Board     -- ^ current board
-  , psTurn   :: Board.XO        -- ^ whose turn 
+  , psTurn   :: Board.Characters        -- ^ whose turn 
   , psPos    :: Board.Pos       -- ^ current cursor
   , psPos2   :: Board.Pos       -- ^ second cursor
   , beans    :: [Board.Pos]
@@ -49,9 +49,9 @@ init n = do
   , psO      = Player.rando
   , psScore  = Score.init n
   , psBoard  = Board.init
-  , psTurn   = Board.X
+  , psTurn   = Board.MAIN
   , psPos    = Board.Pos 2 1
-  , psPos2   = Board.Pos 6 0
+  , psPos2   = Board.Pos 5 3
   , beans    = []
   , boardVis  = Board.Vis []
   , psResult = Board.Cont ()
@@ -77,6 +77,11 @@ isCurrEnemy s r c = foldr (\p-> (||) (Board.pRow p == r && Board.pCol p == c)) F
   where 
     p2s = beans s
 
+isCurrSnake :: PlayState -> Int -> Int -> Bool
+isCurrSnake s r c = Board.pRow p == r && Board.pCol p == c
+  where 
+    p = psPos2 s
+
 {- checkVis :: [Pos] -> Pos -> Bool
 checkVis bs p
   = foldr
@@ -89,8 +94,7 @@ isVisited s r c = Board.checkVis (Board.visited (boardVis s)) (Board.Pos r c)
 
 next :: PlayState -> Board.Result Board.Board -> Either (Board.Result ()) PlayState
 next s Board.Retry     = Right s
-next s (Board.Cont b') = Right (s { psBoard = b'
-                                  , psTurn  = Board.flipXO (psTurn s) })
+next s (Board.Cont b') = Right (s { psBoard = b'})
 next s res             = nextBoard s res 
 
 nextBoard :: PlayState -> Board.Result a -> Either (Board.Result ()) PlayState

@@ -51,14 +51,15 @@ addEnemy s n = s {
         enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) (fromInteger r)]
 updateEnemy s = s {
   beans = newEnemy,
+  psPos2 = newSnake,
   nextInteger = newFs
 }
   where fs = nextInteger s
         enemy = beans s
-        len = length enemy
-        nextRandom = nextInt len fs
-        newFs = rmLst len fs
+        nextRandom = nextInt 1 fs
+        newFs = rmLst 1 fs
         newEnemy = moveDown enemy nextRandom
+        newSnake = randomMove' (psPos2 s) (head nextRandom)
 
 nextInt 0 _ = []
 nextInt num (f:|fs) = f:nextInt (num-1) fs
@@ -82,13 +83,12 @@ moveDown _ [] = []
 moveDown [] _ = []
 moveDown (k:ks) (l:ls) = down(k):(moveDown ks ls)
 
-randomMove' _ [] = []
-randomMove' [] _ = []
-randomMove' (k:ks) (l:ls)
-  | l == 0 = up(k):(randomMove' ks ls)
-  | l == 1 = down(k):(randomMove' ks ls)
-  | l == 2 = left(k):(randomMove' ks ls)
-  | otherwise = right(k):(randomMove' ks ls)
+randomMove' :: Pos -> Integer -> Pos
+randomMove' k l
+  | l == 0 = up (k)
+  | l == 1 = down (k)
+  | l == 2 = left (k)
+  | otherwise = right (k)
 
 -------------------------------------------------------------------------------
 move :: Direct -> PlayState -> PlayState
@@ -118,18 +118,18 @@ move d s
 
 
 -------------------------------------------------------------------------------
-play :: XO -> PlayState -> IO (Result Board)
+play :: Characters -> PlayState -> IO (Result Board)
 -------------------------------------------------------------------------------
 play xo s
   | psTurn s == xo = put (psBoard s) xo <$> getPos xo s
   | otherwise      = return Retry
 
-getPos :: XO -> PlayState -> IO Pos
+getPos :: Characters -> PlayState -> IO Pos
 getPos xo s = getStrategy xo s (psPos s) (psBoard s) xo
 
-getStrategy :: XO -> PlayState -> Strategy
-getStrategy X s = plStrat (psX s)
-getStrategy O s = plStrat (psO s)
+getStrategy :: Characters -> PlayState -> Strategy
+getStrategy MAIN s = plStrat (psX s)
+getStrategy SNAKE s = plStrat (psO s)
 
 -------------------------------------------------------------------------------
 nextS :: PlayState -> Result Board -> EventM n (Next PlayState)

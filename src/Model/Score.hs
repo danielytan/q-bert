@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Model.Score where
 
-import Model.Board (Result (..), XO (..))
+import Model.Board (Result (..), Characters (..))
 
 -------------------------------------------------------------------------------
 -- | Score --------------------------------------------------------------------
@@ -18,27 +18,27 @@ data Score = Score
 init :: Int -> Score
 init n = Score n 0 0 0
 
-add :: Score -> Maybe XO -> Score
-add sc (Just X) = sc { scX = scX sc + 1 }
-add sc (Just O) = sc { scO = scO sc + 1 }
+add :: Score -> Maybe Characters -> Score
+add sc (Just MAIN) = sc { scX = scX sc + 1 }
+add sc (Just SNAKE) = sc { scO = scO sc + 1 }
 add sc Nothing  = sc { scD = scD sc + 1 }
 
-get :: Score -> XO -> Int
-get Score {..} X = scX 
-get Score {..} O = scO 
+get :: Score -> Characters -> Int
+get Score {..} MAIN = scX 
+get Score {..} SNAKE = scO 
 
 currRound :: Score -> Int
 currRound Score {..} = scX + scO + scD + 1
 
-startPlayer :: Score -> XO
+startPlayer :: Score -> Characters
 startPlayer sc 
-  | even (currRound sc) = X
-  | otherwise           = O
+  | even (currRound sc) = MAIN
+  | otherwise           = SNAKE
 
 winner :: Score -> Result () 
 winner sc@Score {..}
-  | scX > scO + left = Win X
-  | scO > scX + left = Win O
+  | scX > scO + left = Win MAIN
+  | scO > scX + left = Win SNAKE
   | left == 0        = Draw
   | otherwise        = Cont ()
   where 
