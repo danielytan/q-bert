@@ -52,7 +52,7 @@ data Pos = Pos
 board ! pos = M.lookup pos board
 
 dim :: Int
-dim = 6
+dim = 16
 
 positions :: [Pos]
 positions = [ Pos r c | r <- [1..dim], c <- [1..dim] ]
