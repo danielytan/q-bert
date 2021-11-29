@@ -9,6 +9,7 @@ import Model
 import Model.Board
 import Control.Monad.IO.Class (MonadIO(liftIO))
 import Model.Player
+import System.Random
 
 
 -------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ markVist s = s {
 }
 
 updateIter s = if mod newIter 5 ==  0
-  then (addEnemy s) {
+  then (addEnemy s (numIters s)) {
     numIters = newIter
   }
   else s{
@@ -42,11 +43,12 @@ updateIter s = if mod newIter 5 ==  0
   }
   where newIter = numIters s +1
 
-addEnemy s = s {
+addEnemy :: PlayState -> Integer -> PlayState
+addEnemy s n = s {
   beans = enemy'
 }
   where enemy = beans s
-        enemy' = enemy ++ [Pos 6 1]
+        enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) (fromInteger r)]
 updateEnemy s = s {
   beans = newEnemy,
   nextInteger = newFs
@@ -56,7 +58,7 @@ updateEnemy s = s {
         len = length enemy
         nextRandom = nextInt len fs
         newFs = rmLst len fs
-        newEnemy = randomMove enemy nextRandom
+        newEnemy = moveDown enemy nextRandom
 
 nextInt 0 _ = []
 nextInt num (f:|fs) = f:nextInt (num-1) fs
@@ -76,13 +78,17 @@ l = [0, 1]
 --- >>> randomMove k l
 --- [Pos {pRow = 2, pCol = 1},Pos {pRow = 6, pCol = 2}]
 ---
-randomMove _ [] = []
-randomMove [] _ = []
-randomMove (k:ks) (l:ls)
-  | l == 0 = up(k):(randomMove ks ls)
-  | l == 1 = down(k):(randomMove ks ls)
-  | l == 2 = left(k):(randomMove ks ls)
-  | otherwise = right(k):(randomMove ks ls)
+moveDown _ [] = []
+moveDown [] _ = []
+moveDown (k:ks) (l:ls) = down(k):(moveDown ks ls)
+
+randomMove' _ [] = []
+randomMove' [] _ = []
+randomMove' (k:ks) (l:ls)
+  | l == 0 = up(k):(randomMove' ks ls)
+  | l == 1 = down(k):(randomMove' ks ls)
+  | l == 2 = left(k):(randomMove' ks ls)
+  | otherwise = right(k):(randomMove' ks ls)
 
 -------------------------------------------------------------------------------
 move :: Direct -> PlayState -> PlayState
