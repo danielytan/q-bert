@@ -45,7 +45,8 @@ init :: Int -> IO PlayState
 init n = do
   rg <- newStdGen
   let lst = fromList (randomRs ((0, 4)::(Integer, Integer)) rg)
-  let g = PS { psX      = Player.human
+  let g = PS { 
+    psX      = Player.human
   , psO      = Player.rando
   , psScore  = Score.init n
   , psBoard  = Board.init
@@ -66,6 +67,32 @@ init n = do
 randomNum = do
   g <- newStdGen
   print . take 10 $ (randomRs ((1, 2)::(Integer, Integer)) g)
+
+checkDeath :: PlayState -> PlayState
+checkDeath s =
+  if checkLose s then
+    -- Do death stuff here
+    s { 
+        psScore  = Score.init 0
+      , psBoard  = Board.init
+      , psTurn   = Board.MAIN
+      , psPos    = Board.Pos 2 1
+      , psPos2   = Board.Pos (2*(Board.dim `div` 3)) (Board.dim `div` 3)
+      , beans    = []
+      , boardVis  = Board.Vis []
+      , psResult = Board.Cont ()
+      , lastMove = Player.DOWN
+      , numIters = 0
+    }
+  else 
+    s
+
+checkLose :: PlayState -> Bool
+checkLose s = isCurrEnemy s r c || isCurrSnake s r c
+  where
+    p = psPos s
+    r = Board.pRow p
+    c = Board.pCol p 
 
 isCurrPlayer :: PlayState -> Int -> Int -> Bool
 isCurrPlayer s r c = Board.pRow p == r && Board.pCol p == c

@@ -16,16 +16,18 @@ import System.Random
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of
-  AppEvent Tick                   -> Brick.continue (step s)--nextS s =<< liftIO (play O s)
+  AppEvent Tick                   -> Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
   -- T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
-  T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (move UP s)
-  T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (move DOWN s)
-  T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (move LEFT s)
-  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (move RIGHT s)
+  T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (stepPlayer UP s)
+  T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (stepPlayer DOWN s)
+  T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (stepPlayer LEFT s)
+  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (stepPlayer RIGHT s)
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
 
-step s = updateEnemy (updateIter s)
+stepEnemy s = checkDeath (updateEnemy (updateIter s))
+stepPlayer dir s = checkDeath (move dir s)
+
 
 --- >>> 2 `mod` (-3)
 --- -1
