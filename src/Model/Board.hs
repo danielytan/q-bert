@@ -18,12 +18,14 @@ module Model.Board
   , checkVis
   , addVisited
   , checkWin
+  , enforceValidPos
 
     -- * Moves
   , up
   , down
   , left
   , right
+  , down'
   )
   where
 
@@ -131,7 +133,6 @@ isFull b = M.size b == dim * dim
 -- | Moves 
 -------------------------------------------------------------------------------
 
-type Direct = Pos -> Pos
 up :: Pos -> Pos
 up p = p
   { pRow = max (pCol p + 1) (pRow p - 1)
@@ -142,6 +143,15 @@ down p = p
   { pRow = min dim (pRow p + 1)
   }
 
+down' :: Pos -> Pos
+down' p = p
+  {
+    pRow = pRow p + 1
+  }
+
+enforceValidPos :: [Pos] -> [Pos]
+enforceValidPos xs = filter (\p -> (pRow p <= dim) ) xs
+
 left :: Pos -> Pos
 left p = p
   { pCol   = max 1 (pCol p - 1)
@@ -151,12 +161,6 @@ right :: Pos -> Pos
 right p = p
   { pCol = min (pRow p - 1) (pCol p + 1)
   }
-
-print_direct :: (Pos -> Pos) -> String
-print_direct up = "UP"
-print_direct down = "DOWN"
-print_direct left = "LEFT"
-print_direct right = "RIGHT"
 
 boardWinner :: Result a -> Maybe Characters
 boardWinner (Win xo) = Just xo

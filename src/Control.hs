@@ -3,7 +3,7 @@ module Control where
 import Brick hiding (Result)
 import qualified Graphics.Vty as V
 import qualified Brick.Types as T
-import Lens.Micro ((&), (.~), (%~), (^.))
+--import Lens.Micro ((&), (.~), (%~), (^.))
 
 import Model
 import Model.Board
@@ -37,7 +37,7 @@ markVist s = s {
   psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s
 }
 
-updateIter s = if mod newIter 5 ==  0
+updateIter s = if mod newIter 3 ==  0
   then (addEnemy s (numIters s)) {
     numIters = newIter
   }
@@ -46,6 +46,10 @@ updateIter s = if mod newIter 5 ==  0
   }
   where newIter = numIters s +1
 
+
+--- >>> mod 4 3
+--- 1
+---
 addEnemy :: PlayState -> Integer -> PlayState
 addEnemy s n = s {
   beans = enemy'
@@ -55,16 +59,16 @@ addEnemy s n = s {
 updateEnemy s = s {
   beans = newEnemy,
   psPos2 = newSnake,
-  nextInteger = newFs
+  nextInteger = newFs'
 }
   where fs = nextInteger s
         enemy = beans s
         len = length enemy
         nextRandom = nextInt len fs
         newFs = rmLst len fs
-        newEnemy = moveDown enemy nextRandom
-        nextRandom' = nextInt 1 fs
-        newFs' = rmLst 1 fs
+        newEnemy = enforceValidPos $ moveDown enemy nextRandom
+        nextRandom' = nextInt 1 newFs
+        newFs' = rmLst 1 newFs
         newSnake = randomMove' (psPos2 s) (head nextRandom')
 
 nextInt 0 _ = []
@@ -87,7 +91,7 @@ l = [0, 1]
 ---
 moveDown _ [] = []
 moveDown [] _ = []
-moveDown (k:ks) (l:ls) = down(k):(moveDown ks ls)
+moveDown (k:ks) (l:ls) = down'(k):(moveDown ks ls)
 
 randomMove' :: Pos -> Integer -> Pos
 randomMove' k l
