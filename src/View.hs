@@ -72,19 +72,15 @@ mkXO (Just BEAN) = blockBean
 blockB, blockChar, blockSnake, blockBean :: Widget n
 blockB = vBox (replicate 5 (str "     "))
 blockChar = vBox [ str " ___   "
-              , str "||  |_ "
-              , str "||  __|"
-              , str "||_|   " 
-              , str "|_ |_  "]
-blockSnake = vBox [ str "_____"
-              , str "' ' |"
-              , str " ___|"
-              , str "|    "
-              , str "|___|"]
+                 , str "||  |_ "
+                 , str "||  __|"
+                 , str "|_ |_  "]
+blockSnake = vBox [ str ",,___"
+                  , str " ___|"
+                  , str "|____"]
 blockBean = vBox [ str "______"
               ,   str "| _  _ |"
               ,   str "|( )( )|"
-              ,   str "| ____ | "
               ,   str "|______|"]
 
 vTile :: [Widget n] -> Widget n
