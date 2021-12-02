@@ -53,6 +53,7 @@ data Pos = Pos
 (!) :: Board -> Pos -> Maybe Characters
 board ! pos = M.lookup pos board
 
+-- MUST BE ODD NUMBER GREATER THAN 4
 dim :: Int
 dim = 9
 
