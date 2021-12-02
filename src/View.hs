@@ -46,9 +46,9 @@ mid = div (dim + 1) 2
 restrict c = mid + abs (c - mid)
 
 fillCell :: Color -> Widget n -> Widget n
-fillCell c = modifyDefAttr (`withBackColor` c)
+fillCell c raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withBackColor` c) raw)
 
-fillEnemy c1 c2 raw = modifyDefAttr (`withForeColor` c2) (modifyDefAttr (`withBackColor` c1) raw)
+fillEnemy c1 c2 raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withForeColor` c2) (modifyDefAttr (`withBackColor` c1) raw))
 
 
 mkCell' :: PlayState -> Int -> Int -> Widget n
