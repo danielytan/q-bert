@@ -40,8 +40,12 @@ type Board = M.Map Pos Characters
 
 data Characters
   = MAIN
-  | SNAKE
+  | SNAKE 
+  | MAIN'
+  | SNAKE'
   | BEAN
+  | SQUID
+  | GOAL
   deriving (Eq, Show)
 
 data Pos = Pos

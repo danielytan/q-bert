@@ -26,8 +26,8 @@ control s ev = case ev of
   _                               -> Brick.continue s -- Brick.halt s
 
 stepEnemy s = checkDeath (updateEnemy (updateIter s))
-stepPlayer dir s = checkDeath (move dir s)
 
+stepPlayer dir s = checkDeath (move dir s)
 
 --- >>> 2 `mod` (-3)
 --- -1
@@ -59,7 +59,8 @@ addEnemy s n = s {
 updateEnemy s = s {
   beans = newEnemy,
   psPos2 = newSnake,
-  nextInteger = newFs'
+  nextInteger = newFs',
+  currEnemyModel = orientSnake s snakeMove
 }
   where fs = nextInteger s
         enemy = beans s
@@ -69,7 +70,13 @@ updateEnemy s = s {
         newEnemy = enforceValidPos $ moveDown enemy nextRandom
         nextRandom' = nextInt 1 newFs
         newFs' = rmLst 1 newFs
-        newSnake = randomMove' (psPos2 s) (head nextRandom')
+        snakeMove = head nextRandom'
+        newSnake = randomMove' (psPos2 s) snakeMove
+
+orientSnake s l 
+  | l == 2 = SNAKE'
+  | l == 3 = SNAKE 
+  | otherwise = currEnemyModel s
 
 nextInt 0 _ = []
 nextInt num (f:|fs) = f:nextInt (num-1) fs
@@ -115,11 +122,13 @@ move d s
     }
     | d == LEFT = s' {
       lastMove = d,
-      psPos = left (psPos s)
+      psPos = left (psPos s),
+      currModel = MAIN'
     }
     | d == RIGHT = s' {
       lastMove = d,
-      psPos = right (psPos s)
+      psPos = right (psPos s),
+      currModel = MAIN
     }
     | otherwise = s'
   where s' = markVist s

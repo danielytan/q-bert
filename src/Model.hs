@@ -7,6 +7,9 @@ import qualified Model.Score  as Score
 import qualified Model.Player as Player
 import System.Random (Random(..), newStdGen)
 import Text.ParserCombinators.ReadP (chainl)
+import Control.Concurrent (threadDelay)
+import qualified GHC.Base as Task
+import Model.Board (Characters)
 
 -------------------------------------------------------------------------------
 -- | Ticks mark passing of time: a custom event that we constantly stream
@@ -41,6 +44,8 @@ data PlayState = PS
   , lastMove :: Player.Direct
   , nextInteger :: Stream Integer
   , numIters :: Integer
+  , currModel :: Characters
+  , currEnemyModel :: Characters 
   } 
 
 init :: Int -> IO PlayState
@@ -63,6 +68,8 @@ init n = do
   , lastMove = Player.DOWN
   , nextInteger = lst
   , numIters = 0
+  , currModel = Board.MAIN
+  , currEnemyModel = Board.SNAKE
   }
   return g
 --- >>> randomNum
@@ -72,11 +79,26 @@ randomNum = do
   g <- newStdGen
   print . take 10 $ (randomRs ((1, 2)::(Integer, Integer)) g)
 
+
+gameOver :: PlayState -> PlayState
+gameOver s = s { 
+        psDeaths = 0
+      , psBoard  = Board.init
+      , psTurn   = Board.MAIN
+      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2)
+      , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2) 
+      , beans    = []
+      , boardVis  = Board.Vis []
+      , psResult = Board.Cont ()
+      , lastMove = Player.DOWN
+      , numIters = 0
+      , psWins = 0
+    }
+
 checkDeath :: PlayState -> PlayState
-checkDeath s =
-  if checkLose s then
-    -- Do death stuff here
-    s { 
+checkDeath s 
+  | checkLose s && psDeaths s + 1 == 3 = gameOver s
+  | checkLose s = s { 
         psDeaths = psDeaths s + 1
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
@@ -88,8 +110,9 @@ checkDeath s =
       , lastMove = Player.DOWN
       , numIters = 0
     }
-  else 
-    s
+  | otherwise = s
+
+
 
 checkLose :: PlayState -> Bool
 checkLose s = isCurrEnemy s r c || isCurrSnake s r c

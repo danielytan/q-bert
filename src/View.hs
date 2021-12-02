@@ -10,6 +10,7 @@ import Model
 import Model.Board
 import Graphics.Vty hiding (dim)
 
+
 -------------------------------------------------------------------------------
 view :: PlayState -> [Widget String]
 -------------------------------------------------------------------------------
@@ -29,8 +30,11 @@ header s = printf "Wins: %s, Deaths = %s, row = %d, col = %d" (show (psWins s)) 
 mkRow :: PlayState -> Int -> Widget n
 mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 
+goalColor = blue
+
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
+  | r == 3 && c == dim-1 = fillCell goalColor raw
   | isCurrPlayer s r c = fillCell blue raw
   | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy blue red raw
   | isVisited s r c = fillCell blue raw
@@ -57,31 +61,51 @@ mkCell' s r c = center (mkXO xoMb)
   where 
     --xoMb      = psBoard s ! Pos r c
     xoMb 
-       | isCurrPlayer s r c   = Just MAIN 
-       | isCurrSnake s r c    = Just SNAKE
+       | r == 2 && c == dim-1 = Just GOAL
+       | isCurrPlayer s r c   = Just (Model.currModel s)
+       | isCurrSnake s r c    = Just (Model.currEnemyModel s)
        | isCurrEnemy s r c    = Just BEAN
        | otherwise            = psBoard s ! Pos r c
+ 
 
 mkXO :: Maybe Characters -> Widget n
 mkXO Nothing  = blockB
 mkXO (Just MAIN) = blockChar
 mkXO (Just SNAKE) = blockSnake
+mkXO (Just MAIN') = blockChar'
+mkXO (Just SNAKE') = blockSnake'
 mkXO (Just BEAN) = blockBean
+mkXO (Just SQUID) = blockSquid
+mkXO (Just GOAL) = blockGoal
 
-
-blockB, blockChar, blockSnake, blockBean :: Widget n
+blockB, blockChar, blockSnake, blockBean, blockSquid, blockGoal :: Widget n
 blockB = vBox (replicate 5 (str "     "))
 blockChar = vBox [ str " ___   "
                  , str "||  |_ "
                  , str "||  __|"
                  , str "|_ |_  "]
-blockSnake = vBox [ str ",,___"
+blockSnake' = vBox [ str ",,___"
                   , str " ___|"
                   , str "|____"]
+blockChar' = vBox [ str "   ___ "
+                 , str " _|  || "
+                 , str "|__  || "
+                 , str "  _| _| "]
+blockSnake = vBox [ str "___,,"
+                  , str "|___"
+                  , str "____|"]
 blockBean = vBox [ str "______"
               ,   str "| _  _ |"
               ,   str "|( )( )|"
               ,   str "|______|"]
+
+blockSquid = vBox [ str " ______"
+                ,   str "|(.)(.)|"
+                ,   str " |||||| "]
+
+blockGoal = vBox [ str " Color "
+               ,   str "  To   "
+               ,   str " Fill  "]
 
 vTile :: [Widget n] -> Widget n
 vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])
