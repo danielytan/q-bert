@@ -54,7 +54,7 @@ data Pos = Pos
 board ! pos = M.lookup pos board
 
 dim :: Int
-dim = 10
+dim = 9
 
 positions :: [Pos]
 positions = [ Pos r c | r <- [1..dim], c <- [1..dim] ]
@@ -69,7 +69,7 @@ newtype Vis = Vis
  deriving (Eq, Ord)
 
 checkWin :: Vis -> Bool 
-checkWin v = length (visited v) >= (dim*dim - dim) `div` 2
+checkWin v = length (visited v) >= (dim - 4) * (dim - 4)
 
 addVisited :: Vis -> Pos -> Vis
 addVisited v p = v
@@ -135,7 +135,7 @@ isFull b = M.size b == dim * dim
 
 up :: Pos -> Pos
 up p = p
-  { pRow = max (pCol p + 1) (pRow p - 1)
+  { pRow = let mid = div (dim + 1) 2 in max (mid + abs (pCol p - mid)) (pRow p - 1)
   }
 
 down :: Pos -> Pos
@@ -154,12 +154,12 @@ enforceValidPos xs = filter (\p -> (pRow p <= dim) ) xs
 
 left :: Pos -> Pos
 left p = p
-  { pCol   = max 1 (pCol p - 1)
+  { pCol   = let mid = div (dim + 1) 2 in max (pRow p - 2 * abs(pRow p - mid)) (pCol p - 1)
   }
 
 right :: Pos -> Pos
 right p = p
-  { pCol = min (pRow p - 1) (pCol p + 1)
+  { pCol = min (pRow p) (pCol p + 1)
   }
 
 boardWinner :: Result a -> Maybe Characters

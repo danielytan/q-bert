@@ -36,10 +36,14 @@ mkCell s r c
   | isVisited s r c = fillCell blue raw
   | isCurrSnake s r c = fillEnemy yellow red raw
   | isCurrEnemy s r c = fillEnemy yellow red raw
-  | r > c = fillCell yellow raw 
+  | r >= restrict c = fillCell yellow raw 
   | otherwise    = raw 
   where
     raw = mkCell' s r c
+
+
+mid = div (dim + 1) 2
+restrict c = mid + abs (c - mid)
 
 fillCell :: Color -> Widget n -> Widget n
 fillCell c = modifyDefAttr (`withBackColor` c)
