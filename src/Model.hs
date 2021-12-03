@@ -43,6 +43,7 @@ data PlayState = PS
   , psResult :: Board.Result () -- ^ result    
   , lastMove :: Player.Direct
   , nextInteger :: Stream Integer
+  , nextInteger2:: Stream Integer
   , numIters :: Integer
   , currModel :: Characters
   , currEnemyModel :: Characters 
@@ -56,6 +57,7 @@ init :: Int -> IO PlayState
 init n = do
   rg <- newStdGen
   let lst = fromList (randomRs ((0, 4)::(Integer, Integer)) rg)
+  let lst2 = fromList (randomRs ((1, toInteger Board.dim)::(Integer, Integer)) rg)
   let g = PS { 
     psX      = Player.human
   , psO      = Player.rando
@@ -71,6 +73,7 @@ init n = do
   , psResult = Board.Cont ()
   , lastMove = Player.DOWN
   , nextInteger = lst
+  , nextInteger2 = lst2
   , numIters = 0
   , currModel = Board.MAIN
   , currEnemyModel = Board.SNAKE

@@ -54,7 +54,7 @@ markVist s = s {
   newLevel = if checkWin (addVisited (boardVis s) (psPos s)) then 1 else newLevel s
 }
 
-updateIter s = if mod newIter 3 ==  0
+updateIter s = if mod newIter 2 ==  0
   then (addEnemy s (numIters s)) {
     numIters = newIter
   }
@@ -67,12 +67,21 @@ updateIter s = if mod newIter 3 ==  0
 --- >>> mod 4 3
 --- 1
 ---
+
+toRow :: [Int]
+toRow = [8,7,6,5,4,5,6,7,8]
+
 addEnemy :: PlayState -> Integer -> PlayState
 addEnemy s n = s {
-  beans = enemy'
+  beans = enemy',
+  nextInteger2 = fs
 }
   where enemy = beans s
-        enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) ((fromInteger r) - 1)]
+        --enemy' = let r = mod n (toInteger (dim)) in enemy ++ [Pos (fromInteger r) ((fromInteger r) - 1)]
+        f:|fs = nextInteger2 s
+        f' = fromInteger f
+        enemy' = enemy ++ [Pos (toRow !! (f' - 1)) f']
+
 updateEnemy s = s {
   beans = newEnemy,
   psPos2 = newSnake,
