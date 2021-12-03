@@ -49,9 +49,11 @@ newGame s = if gameIsOver s then s {
 --- -1
 ---
 markVist s = s {
-  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s),
-  psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s,
-  newLevel = if checkWin (addVisited (boardVis s) (psPos s)) then 1 else newLevel s
+  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s)
+  ,psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s
+  ,newLevel = if checkWin (addVisited (boardVis s) (psPos s)) then 1 else newLevel s
+  --,psPos    = Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) not working for some reason
+  ,psPos2   = if checkWin (addVisited (boardVis s) (psPos s)) then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
 }
 
 updateIter s = if mod newIter 2 ==  0
