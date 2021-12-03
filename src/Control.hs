@@ -16,7 +16,7 @@ import System.Random
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of
-  AppEvent Tick                   -> if gameIsOver s then Brick.continue (test s) else if newLevel s > 0 then Brick.continue (nextLvl s) else Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
+  AppEvent Tick                   -> if deathAnimation s > 0 then Brick.continue (deathAnim s) else if gameIsOver s then Brick.continue (test s) else if newLevel s > 0 then Brick.continue (nextLvl s) else Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
   T.VtyEvent (V.EvKey V.KEnter _) -> Brick.continue (newGame s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer UP s)
   T.VtyEvent (V.EvKey V.KDown _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer DOWN s)
@@ -28,6 +28,13 @@ control s ev = case ev of
 stepEnemy s = checkDeath (updateEnemy (updateIter s))
 
 stepPlayer dir s =  checkDeath (move dir s)
+
+deathAnim s = s {
+    deathAnimation = if deathAnimation s > 0 then (deathAnimation s + 1) `mod` 3 else deathAnimation s
+    , psPos    = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) else psPos s
+    , psPos2   = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
+    , paused = if (deathAnimation s + 1) `mod` 3 == 0 then False else paused s
+  }
 
 nextLvl s = s {
     newLevel = if newLevel s > 0 then (newLevel s + 1) `mod` 3 else newLevel s

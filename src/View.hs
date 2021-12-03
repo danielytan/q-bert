@@ -34,6 +34,7 @@ goalColor = blue
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c
+  | deathAnimation s > 0 && isCurrPlayer s (r+1) (c-1) = fillDeathBox white black raw
   | newLevel s > 0 = raw
   | odd (gameIsOver' s) && gameIsOver s && r == 4 && c /= 5 = fillCell red raw
   | r == 3 && c == dim-1 = fillCell goalColor raw
@@ -56,6 +57,8 @@ fillCell c raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withBackColor
 
 fillEnemy c1 c2 raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withForeColor` c2) (modifyDefAttr (`withBackColor` c1) raw))
 
+fillDeathBox c1 c2 raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withForeColor` c2) (modifyDefAttr (`withBackColor` c1) raw))
+
 
 mkCell' :: PlayState -> Int -> Int -> Widget n
 -- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
@@ -63,6 +66,7 @@ mkCell' s r c = center (mkXO xoMb)
   where
     --xoMb      = psBoard s ! Pos r c
     xoMb
+       | deathAnimation s > 0 && isCurrPlayer s (r+1) (c-1) = Just GIB
        | newLevel s > 0 && r == 4 && c == 3 = Just L 
        | newLevel s > 0 && r == 4 && c == 4 = Just E 
        | newLevel s > 0 && r == 4 && c == 5 = Just V 
@@ -120,6 +124,7 @@ mkXO (Just SIX) = block6
 mkXO (Just SEVEN) = block7
 mkXO (Just EIGHT) = block8
 mkXO (Just NINE) = block9
+mkXO (Just GIB) = blockGib
 
 
 blockB, blockChar, blockSnake, blockBean, blockSquid, blockGoal :: Widget n
@@ -205,6 +210,10 @@ block8 = vBox [ str "  ___  "
 block9 = vBox [ str "  ___  "
             ,   str " |___| "
             ,   str "  ___| "]
+
+blockGib = vBox [ str "       "
+            ,   str " %!&?/?# "
+            ,   str "         "]
 
 blockEnter = vBox [ str "   Press  "
             ,   str "   Enter  "

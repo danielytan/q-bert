@@ -64,6 +64,7 @@ data Characters
   | SEVEN
   | EIGHT
   | NINE
+  | GIB
   deriving (Eq, Show)
 
 data Pos = Pos

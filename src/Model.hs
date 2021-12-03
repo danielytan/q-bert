@@ -51,6 +51,7 @@ data PlayState = PS
   , gameIsOver' :: Int
   , paused :: Bool
   , newLevel :: Int
+  , deathAnimation :: Int
   } 
 
 init :: Int -> IO PlayState
@@ -81,6 +82,7 @@ init n = do
   , gameIsOver' = 0 
   , paused = False
   , newLevel = 0
+  , deathAnimation = 0
   }
   return g
 --- >>> randomNum
@@ -98,8 +100,6 @@ gameOver s = s {
       , psDeaths = 0
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
-      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2)
-      , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2) 
       , beans    = []
       , boardVis  = Board.Vis []
       , psResult = Board.Cont ()
@@ -107,6 +107,7 @@ gameOver s = s {
       , numIters = 0
       , psWins = 0
       , paused = True
+      , deathAnimation = 1
     }
 
 checkDeath :: PlayState -> PlayState
@@ -116,13 +117,13 @@ checkDeath s
         psDeaths = psDeaths s + 1
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
-      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2)
-      , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2) 
       , beans    = []
       , boardVis  = Board.Vis []
       , psResult = Board.Cont ()
       , lastMove = Player.DOWN
       , numIters = 0
+      , paused = True
+      , deathAnimation = 1
     }
   | otherwise = s
 
