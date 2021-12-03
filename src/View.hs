@@ -34,7 +34,7 @@ goalColor = blue
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c
-  | deathAnimation s > 0 && isCurrPlayer s (r+1) (c-1) = fillDeathBox white black raw
+  | deathAnimation s > 0 && ((Model.currModel s == MAIN && isCurrPlayer s (r+1) (c-1)) || (Model.currModel s == MAIN' && isCurrPlayer s (r+1) (c+1))) = fillDeathBox white black raw
   | newLevel s > 0 = raw
   | odd (gameIsOver' s) && gameIsOver s && r == 4 && c /= 5 = fillCell red raw
   | r == 3 && c == dim-1 = fillCell goalColor raw
@@ -66,7 +66,7 @@ mkCell' s r c = center (mkXO xoMb)
   where
     --xoMb      = psBoard s ! Pos r c
     xoMb
-       | deathAnimation s > 0 && isCurrPlayer s (r+1) (c-1) = Just GIB
+       | deathAnimation s > 0 && ((Model.currModel s == MAIN && isCurrPlayer s (r+1) (c-1)) || (Model.currModel s == MAIN' && isCurrPlayer s (r+1) (c+1)))  = Just GIB
        | newLevel s > 0 && r == 4 && c == 3 = Just L 
        | newLevel s > 0 && r == 4 && c == 4 = Just E 
        | newLevel s > 0 && r == 4 && c == 5 = Just V 
