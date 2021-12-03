@@ -25,10 +25,24 @@ control s ev = case ev of
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
 
-stepEnemy s = checkDeath (updateEnemy (updateIter s))
+stepEnemy s = doGameOver (checkDeath (updateEnemy (updateIter s))) 100000
 
-stepPlayer dir s = checkDeath (move dir s)
+stepPlayer dir s = doGameOver (checkDeath (move dir s)) 100000
 
+doGameOver s n 
+  | gameIsOver s = doGameOver' s n
+  | otherwise = s
+
+doGameOver' s n 
+  | n < 0 = s {
+    gameIsOver = False
+  } 
+  | even n = doGameOver' s {
+    gameIsOver = False
+  } (n-1)
+  | otherwise = doGameOver' s {
+    gameIsOver = True
+  } (n-1)
 --- >>> 2 `mod` (-3)
 --- -1
 ---

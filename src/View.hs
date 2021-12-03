@@ -23,7 +23,7 @@ view' s =
       vTile [ mkRow s row | row <- [1..dim] ]
 
 header :: PlayState -> String
-header s = printf "Wins: %s, Deaths = %s, row = %d, col = %d" (show (psWins s)) (show (psDeaths s)) (pRow p) (pCol p)
+header s = printf "Wins: %s, Deaths = %s, row = %d, col = %d, gameOver = %s" (show (psWins s)) (show (psDeaths s)) (pRow p) (pCol p) (show (gameIsOver s))
   where 
     p    = psPos s
 
@@ -34,6 +34,7 @@ goalColor = blue
 
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c 
+  | gameIsOver s = fillCell red raw
   | r == 3 && c == dim-1 = fillCell goalColor raw
   | isCurrPlayer s r c = fillCell blue raw
   | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy blue red raw

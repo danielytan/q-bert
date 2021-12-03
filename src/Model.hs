@@ -46,6 +46,7 @@ data PlayState = PS
   , numIters :: Integer
   , currModel :: Characters
   , currEnemyModel :: Characters 
+  , gameIsOver :: Bool 
   } 
 
 init :: Int -> IO PlayState
@@ -70,6 +71,7 @@ init n = do
   , numIters = 0
   , currModel = Board.MAIN
   , currEnemyModel = Board.SNAKE
+  , gameIsOver = False
   }
   return g
 --- >>> randomNum
@@ -82,7 +84,8 @@ randomNum = do
 
 gameOver :: PlayState -> PlayState
 gameOver s = s { 
-        psDeaths = 0
+        gameIsOver = True 
+      , psDeaths = 0
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
       , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2)
