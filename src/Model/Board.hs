@@ -46,6 +46,24 @@ data Characters
   | BEAN
   | SQUID
   | GOAL
+  | G
+  | A
+  | M
+  | E
+  | O
+  | V
+  | R
+  | ENTER
+  | L
+  | ONE
+  | TWO
+  | THREE
+  | FOUR
+  | FIVE
+  | SIX
+  | SEVEN
+  | EIGHT
+  | NINE
   deriving (Eq, Show)
 
 data Pos = Pos

@@ -16,39 +16,42 @@ import System.Random
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of
-  AppEvent Tick                   -> Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
-  -- T.VtyEvent (V.EvKey V.KEnter _) -> nextS s =<< liftIO (play X s)
-  T.VtyEvent (V.EvKey V.KUp   _)  -> Brick.continue (stepPlayer UP s)
-  T.VtyEvent (V.EvKey V.KDown _)  -> Brick.continue (stepPlayer DOWN s)
-  T.VtyEvent (V.EvKey V.KLeft _)  -> Brick.continue (stepPlayer LEFT s)
-  T.VtyEvent (V.EvKey V.KRight _) -> Brick.continue (stepPlayer RIGHT s)
+  AppEvent Tick                   -> if gameIsOver s then Brick.continue (test s) else if newLevel s > 0 then Brick.continue (nextLvl s) else Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
+  T.VtyEvent (V.EvKey V.KEnter _) -> Brick.continue (newGame s)
+  T.VtyEvent (V.EvKey V.KUp   _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer UP s)
+  T.VtyEvent (V.EvKey V.KDown _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer DOWN s)
+  T.VtyEvent (V.EvKey V.KLeft _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer LEFT s)
+  T.VtyEvent (V.EvKey V.KRight _) -> if paused s then Brick.continue s else Brick.continue (stepPlayer RIGHT s)
   T.VtyEvent (V.EvKey V.KEsc _)   -> Brick.halt s
   _                               -> Brick.continue s -- Brick.halt s
 
-stepEnemy s = doGameOver (checkDeath (updateEnemy (updateIter s))) 100000
+stepEnemy s = checkDeath (updateEnemy (updateIter s))
 
-stepPlayer dir s = doGameOver (checkDeath (move dir s)) 100000
+stepPlayer dir s =  checkDeath (move dir s)
 
-doGameOver s n 
-  | gameIsOver s = doGameOver' s n
-  | otherwise = s
+nextLvl s = s {
+    newLevel = if newLevel s > 0 then (newLevel s + 1) `mod` 3 else newLevel s
+  }
 
-doGameOver' s n 
-  | n < 0 = s {
-    gameIsOver = False
-  } 
-  | even n = doGameOver' s {
-    gameIsOver = False
-  } (n-1)
-  | otherwise = doGameOver' s {
-    gameIsOver = True
-  } (n-1)
+test s = s {
+    gameIsOver =  (gameIsOver' s /= 0) && gameIsOver s,
+    gameIsOver' = if gameIsOver' s /= 0 && gameIsOver' s < 5 then gameIsOver' s + 1 else gameIsOver' s
+  }
+
+newGame s = if gameIsOver s then s {
+      gameIsOver = False,
+      gameIsOver' = 0,
+      paused = False
+    }
+    else 
+    s
 --- >>> 2 `mod` (-3)
 --- -1
 ---
 markVist s = s {
   boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s),
-  psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s
+  psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s,
+  newLevel = if checkWin (addVisited (boardVis s) (psPos s)) then 1 else newLevel s
 }
 
 updateIter s = if mod newIter 3 ==  0
@@ -87,9 +90,9 @@ updateEnemy s = s {
         snakeMove = head nextRandom'
         newSnake = randomMove' (psPos2 s) snakeMove
 
-orientSnake s l 
+orientSnake s l
   | l == 2 = SNAKE'
-  | l == 3 = SNAKE 
+  | l == 3 = SNAKE
   | otherwise = currEnemyModel s
 
 nextInt 0 _ = []

@@ -17,14 +17,14 @@ view :: PlayState -> [Widget String]
 view s = [view' s]
 
 view' :: PlayState -> Widget String
-view' s = 
+view' s =
   withBorderStyle unicode $
     borderWithLabel (str (header s)) $
       vTile [ mkRow s row | row <- [1..dim] ]
 
 header :: PlayState -> String
-header s = printf "Wins: %s, Deaths = %s, row = %d, col = %d, gameOver = %s" (show (psWins s)) (show (psDeaths s)) (pRow p) (pCol p) (show (gameIsOver s))
-  where 
+header s = printf "Level: %s, Deaths = %s, row = %d, col = %d, gameOver = %s" (show (psWins s + 1)) (show (psDeaths s)) (pRow p) (pCol p) (show (gameIsOver s))
+  where
     p    = psPos s
 
 mkRow :: PlayState -> Int -> Widget n
@@ -33,16 +33,17 @@ mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 goalColor = blue
 
 mkCell :: PlayState -> Int -> Int -> Widget n
-mkCell s r c 
-  | gameIsOver s = fillCell red raw
+mkCell s r c
+  | newLevel s > 0 = raw
+  | odd (gameIsOver' s) && gameIsOver s && r == 4 && c /= 5 = fillCell red raw
   | r == 3 && c == dim-1 = fillCell goalColor raw
   | isCurrPlayer s r c = fillCell blue raw
   | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy blue red raw
   | isVisited s r c = fillCell blue raw
   | isCurrSnake s r c = fillEnemy yellow red raw
   | isCurrEnemy s r c = fillEnemy yellow red raw
-  | r >= restrict c = fillCell yellow raw 
-  | otherwise    = raw 
+  | r >= restrict c = fillCell yellow raw
+  | otherwise    = raw
   where
     raw = mkCell' s r c
 
@@ -59,15 +60,38 @@ fillEnemy c1 c2 raw = modifyDefAttr (`withStyle` bold) (modifyDefAttr (`withFore
 mkCell' :: PlayState -> Int -> Int -> Widget n
 -- mkCell' _ r c = center (str (printf "(%d, %d)" r c))
 mkCell' s r c = center (mkXO xoMb)
-  where 
+  where
     --xoMb      = psBoard s ! Pos r c
-    xoMb 
-       | r == 2 && c == dim-1 = Just GOAL
-       | isCurrPlayer s r c   = Just (Model.currModel s)
-       | isCurrSnake s r c    = Just (Model.currEnemyModel s)
-       | isCurrEnemy s r c    = Just BEAN
+    xoMb
+       | newLevel s > 0 && r == 4 && c == 3 = Just L 
+       | newLevel s > 0 && r == 4 && c == 4 = Just E 
+       | newLevel s > 0 && r == 4 && c == 5 = Just V 
+       | newLevel s > 0 && r == 4 && c == 6 = Just E 
+       | newLevel s > 0 && r == 4 && c == 7 = Just L 
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 1 = Just ONE
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 2 = Just TWO
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 3 = Just THREE
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 4 = Just FOUR
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 5 = Just FIVE
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 6 = Just SIX
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 7 = Just SEVEN
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 8 = Just EIGHT
+       | newLevel s > 0 && r == 6 && c == 5 && psWins s + 1 == 9 = Just NINE
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 1 = Just G
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 2 = Just A
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 3 = Just M
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 4 = Just E
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 5 = Just ENTER
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 6 = Just O
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 7 = Just V
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 8 = Just E
+       | newLevel s == 0 && odd (gameIsOver' s) && gameIsOver s && r == 4 && c == 9 = Just R
+       | newLevel s == 0 && r == 2 && c == dim-1 = Just GOAL
+       | newLevel s == 0 && isCurrPlayer s r c   = Just (Model.currModel s)
+       | newLevel s == 0 && isCurrSnake s r c    = Just (Model.currEnemyModel s)
+       | newLevel s == 0 && isCurrEnemy s r c    = Just BEAN
        | otherwise            = psBoard s ! Pos r c
- 
+
 
 mkXO :: Maybe Characters -> Widget n
 mkXO Nothing  = blockB
@@ -78,6 +102,25 @@ mkXO (Just SNAKE') = blockSnake'
 mkXO (Just BEAN) = blockBean
 mkXO (Just SQUID) = blockSquid
 mkXO (Just GOAL) = blockGoal
+mkXO (Just G) = blockG
+mkXO (Just A) = blockA
+mkXO (Just M) = blockM
+mkXO (Just E) = blockE
+mkXO (Just O) = blockO
+mkXO (Just V) = blockV
+mkXO (Just R) = blockR
+mkXO (Just ENTER) = blockEnter
+mkXO (Just L) = blockL
+mkXO (Just ONE) = block1
+mkXO (Just TWO) = block2
+mkXO (Just THREE) = block3
+mkXO (Just FOUR) = block4
+mkXO (Just FIVE) = block5
+mkXO (Just SIX) = block6
+mkXO (Just SEVEN) = block7
+mkXO (Just EIGHT) = block8
+mkXO (Just NINE) = block9
+
 
 blockB, blockChar, blockSnake, blockBean, blockSquid, blockGoal :: Widget n
 blockB = vBox (replicate 5 (str "     "))
@@ -107,6 +150,65 @@ blockSquid = vBox [ str " ______"
 blockGoal = vBox [ str " Color "
                ,   str "  To   "
                ,   str " Fill  "]
+
+blockG = vBox [ str "  ____ "
+            ,   str " |   _  "
+            ,   str " |____| "]
+blockA = vBox [ str "  ____  "
+            ,   str " |____| "
+            ,   str " |    | "]
+blockM = vBox [ str "  _  _"
+            ,   str " | \\/ |  "
+            ,   str " |    |"]
+blockE = vBox [ str "  _____ "
+            ,   str " |_____   "
+            ,   str " |_____  "]
+blockO = vBox [ str "  _____ "
+            ,   str " |     | "
+            ,   str " |_____| "]
+blockV = vBox [ str "        "
+            ,   str " \\    /"
+            ,   str "  \\  / "
+            ,   str "   \\/  "]
+blockL = vBox [ str " | "
+            ,   str " | "
+            ,   str " |____  "]
+
+blockR = vBox [ str " _____ "
+            ,   str " |___| "
+            ,   str " |\\  "]
+
+block1 = vBox [ str "     |"
+            ,   str "     | "
+            ,   str "     | "]
+block2 = vBox [ str "  ___ "
+            ,   str "  ___| "
+            ,   str " |___  "]
+block3 = vBox [ str "  ___  "
+            ,   str "  ___| "
+            ,   str "  ___| "]
+block4 = vBox [ str "       "
+            ,   str " |___| "
+            ,   str "     | "]
+block5 = vBox [ str "  ___  "
+            ,   str " |___  "
+            ,   str "  ___| "]
+block6 = vBox [ str "  ___  "
+            ,   str " |___  "
+            ,   str " |___| "]
+block7 = vBox [ str "  ___  "
+            ,   str "     | "
+            ,   str "     | "]
+block8 = vBox [ str "  ___  "
+            ,   str " |___| "
+            ,   str " |___| "]
+block9 = vBox [ str "  ___  "
+            ,   str " |___| "
+            ,   str "  ___| "]
+
+blockEnter = vBox [ str "   Press  "
+            ,   str "   Enter  "
+            ,   str "to Restart"]
 
 vTile :: [Widget n] -> Widget n
 vTile (b:bs) = vBox (b : [hBorder <=> b | b <- bs])
