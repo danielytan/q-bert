@@ -44,10 +44,21 @@ mkCell s r c
   | r >= restrict c = fillCell unvisitedColor raw
   | otherwise    = raw
   where
-    goalColor = if psWins s <= 1 then blue else magenta
-    unvisitedColor = if psWins s <= 1 then yellow else cyan
+    goalColor = setGoalColor (psWins s)
+    unvisitedColor = setUnvisitedColor (psWins s)
     raw = mkCell' s r c
 
+setGoalColor :: Int -> Color
+setGoalColor i
+  | i <= 1 = blue
+  | i <= 3 = magenta
+  | i <= 5 = white
+
+setUnvisitedColor :: Int -> Color
+setUnvisitedColor i
+  | i <= 1 = yellow
+  | i <= 3 = cyan
+  | i <= 5 = green
 
 mid = div (dim + 1) 2
 restrict c = mid + abs (c - mid)
