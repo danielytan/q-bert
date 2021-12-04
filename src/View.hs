@@ -23,9 +23,10 @@ view' s =
       vTile [ mkRow s row | row <- [1..dim] ]
 
 header :: PlayState -> String
-header s = printf "Level: %s, Deaths = %s, row = %d, col = %d, gameOver = %s" (show (psWins s + 1)) (show (psDeaths s)) (pRow p) (pCol p) (show (gameIsOver s))
+header s = printf "Level: %s, Deaths = %s, Points = %s, row = %d, col = %d, gameOver = %s" (show (psWins s + 1)) (show (psDeaths s)) (show (pts)) (pRow p) (pCol p) (show (gameIsOver s))
   where
     p    = psPos s
+    pts  = points s
 
 mkRow :: PlayState -> Int -> Widget n
 mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]

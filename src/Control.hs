@@ -30,17 +30,17 @@ stepEnemy s = checkDeath (updateEnemy (updateIter s))
 stepPlayer dir s =  checkDeath (move dir s)
 
 deathAnim s = s {
-      boardVis  = if (deathAnimation s + 1) `mod` 3 == 0 then Vis [] else boardVis s
-    , deathAnimation = if deathAnimation s > 0 then (deathAnimation s + 1) `mod` 3 else deathAnimation s
-    , psPos    = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) else psPos s
-    , psPos2   = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
-    , paused = if (deathAnimation s + 1) `mod` 3 == 0 && not(gameIsOver s) then False else paused s
-    
-  }
+    boardVis  = if (deathAnimation s + 1) `mod` 3 == 0 then Vis [] else boardVis s
+  , deathAnimation = if deathAnimation s > 0 then (deathAnimation s + 1) `mod` 3 else deathAnimation s
+  , psPos    = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) else psPos s
+  , psPos2   = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
+  , paused = if (deathAnimation s + 1) `mod` 3 == 0 && not(gameIsOver s) then False else paused s
+}
 
 nextLvl s = s {
-    newLevel = if newLevel s > 0 then (newLevel s + 1) `mod` 3 else newLevel s
-  }
+  newLevel = if newLevel s > 0 then (newLevel s + 1) `mod` 3 else newLevel s,
+  points   = (points s) + 50
+}
 
 test s = s {
     gameIsOver =  (gameIsOver' s /= 0) && gameIsOver s,
@@ -48,21 +48,29 @@ test s = s {
   }
 
 newGame s = if gameIsOver s then s {
-      gameIsOver = False,
-      gameIsOver' = 0,
-      paused = False
-    }
-    else 
+  gameIsOver = False,
+  gameIsOver' = 0,
+  paused = False
+}
+  else 
     s
 --- >>> 2 `mod` (-3)
 --- -1
 ---
 markVist s = s {
-  boardVis = if checkWin (addVisited (boardVis s) (psPos s)) then Vis [] else addVisited (boardVis s) (psPos s)
-  ,psWins = if checkWin (addVisited (boardVis s) (psPos s)) then psWins s + 1 else psWins s
-  ,newLevel = if checkWin (addVisited (boardVis s) (psPos s)) then 1 else newLevel s
+    boardVis = if hasWon then Vis [] else addVisited (boardVis s) (psPos s)
+  , psWins   = if hasWon then psWins s + 1 else psWins s
+  , newLevel = if hasWon then 1 else newLevel s
   --,psPos    = Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) not working for some reason
-  ,psPos2   = if checkWin (addVisited (boardVis s) (psPos s)) then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
+  , psPos2   = if hasWon then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
+  , points   = (points s) + 1
+}
+  where
+    visitedTiles = addVisited (boardVis s) (psPos s)
+    hasWon       = checkWin (visitedTiles)
+
+addPoints s i = s {
+  points = (points s) + i
 }
 
 updateIter s = if psWins s > 1 then 

@@ -52,6 +52,7 @@ data PlayState = PS
   , paused :: Bool
   , newLevel :: Int
   , deathAnimation :: Int
+  , points :: Int
   } 
 
 init :: Int -> IO PlayState
@@ -83,6 +84,7 @@ init n = do
   , paused = False
   , newLevel = 0
   , deathAnimation = 0
+  , points = 0
   }
   return g
 --- >>> randomNum
@@ -94,19 +96,20 @@ randomNum = do
 
 gameOver :: PlayState -> PlayState
 gameOver s = s { 
-        gameIsOver = True
-      , gameIsOver' = 1 
-      , psDeaths = 0
-      , psBoard  = Board.init
-      , psTurn   = Board.MAIN
-      , beans    = []
-      , psResult = Board.Cont ()
-      , lastMove = Player.DOWN
-      , numIters = 0
-      , psWins = 0
-      , paused = True
-      , deathAnimation = 1
-    }
+    gameIsOver = True
+  , gameIsOver' = 1 
+  , psDeaths = 0
+  , psBoard  = Board.init
+  , psTurn   = Board.MAIN
+  , beans    = []
+  , psResult = Board.Cont ()
+  , lastMove = Player.DOWN
+  , numIters = 0
+  , psWins = 0
+  , paused = True
+  , deathAnimation = 1
+  , points = 0
+}
 
 checkDeath :: PlayState -> PlayState
 checkDeath s 
