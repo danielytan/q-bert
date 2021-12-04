@@ -101,7 +101,6 @@ gameOver s = s {
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
       , beans    = []
-      , boardVis  = Board.Vis []
       , psResult = Board.Cont ()
       , lastMove = Player.DOWN
       , numIters = 0
@@ -118,7 +117,6 @@ checkDeath s
       , psBoard  = Board.init
       , psTurn   = Board.MAIN
       , beans    = []
-      , boardVis  = Board.Vis []
       , psResult = Board.Cont ()
       , lastMove = Player.DOWN
       , numIters = 0

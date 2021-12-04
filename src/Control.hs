@@ -30,10 +30,12 @@ stepEnemy s = checkDeath (updateEnemy (updateIter s))
 stepPlayer dir s =  checkDeath (move dir s)
 
 deathAnim s = s {
-    deathAnimation = if deathAnimation s > 0 then (deathAnimation s + 1) `mod` 3 else deathAnimation s
+      boardVis  = if (deathAnimation s + 1) `mod` 3 == 0 then Vis [] else boardVis s
+    , deathAnimation = if deathAnimation s > 0 then (deathAnimation s + 1) `mod` 3 else deathAnimation s
     , psPos    = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) else psPos s
     , psPos2   = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
-    , paused = if (deathAnimation s + 1) `mod` 3 == 0 then False else paused s
+    , paused = if (deathAnimation s + 1) `mod` 3 == 0 && not(gameIsOver s) then False else paused s
+    
   }
 
 nextLvl s = s {
