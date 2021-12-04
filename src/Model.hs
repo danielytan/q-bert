@@ -92,7 +92,6 @@ randomNum = do
   g <- newStdGen
   print . take 10 $ (randomRs ((1, 2)::(Integer, Integer)) g)
 
-
 gameOver :: PlayState -> PlayState
 gameOver s = s { 
         gameIsOver = True
@@ -125,7 +124,18 @@ checkDeath s
     }
   | otherwise = s
 
-
+changeLevel :: PlayState -> Int -> PlayState
+changeLevel s i
+  | i == 1 = s { 
+        psBoard  = Board.init
+      , psTurn   = Board.MAIN
+      , beans    = []
+      , psResult = Board.Cont ()
+      , lastMove = Player.DOWN
+      , numIters = 0
+      , paused = True
+      , deathAnimation = 0
+    }
 
 checkLose :: PlayState -> Bool
 checkLose s = isCurrEnemy s r c || isCurrSnake s r c

@@ -30,22 +30,22 @@ header s = printf "Level: %s, Deaths = %s, row = %d, col = %d, gameOver = %s" (s
 mkRow :: PlayState -> Int -> Widget n
 mkRow s row = hTile [ mkCell s row i | i <- [1..dim] ]
 
-goalColor = blue
-
 mkCell :: PlayState -> Int -> Int -> Widget n
 mkCell s r c
   | deathAnimation s > 0 && ((Model.currModel s == MAIN && isCurrPlayer s (r+1) (c-1)) || (Model.currModel s == MAIN' && isCurrPlayer s (r+1) (c+1))) = fillDeathBox white black raw
   | newLevel s > 0 = raw
   | odd (gameIsOver' s) && gameIsOver s && r == 4 && c /= 5 = fillCell red raw
   | r == 3 && c == dim-1 = fillCell goalColor raw
-  | isCurrPlayer s r c = fillCell blue raw
-  | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy blue red raw
-  | isVisited s r c = fillCell blue raw
-  | isCurrSnake s r c = fillEnemy yellow red raw
-  | isCurrEnemy s r c = fillEnemy yellow red raw
-  | r >= restrict c = fillCell yellow raw
+  | isCurrPlayer s r c = fillCell goalColor raw
+  | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy goalColor red raw
+  | isVisited s r c = fillCell goalColor raw
+  | isCurrSnake s r c = fillEnemy unvisitedColor red raw
+  | isCurrEnemy s r c = fillEnemy unvisitedColor red raw
+  | r >= restrict c = fillCell unvisitedColor raw
   | otherwise    = raw
   where
+    goalColor = if psWins s <= 1 then blue else magenta
+    unvisitedColor = if psWins s <= 1 then yellow else cyan
     raw = mkCell' s r c
 
 
