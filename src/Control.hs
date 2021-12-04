@@ -65,14 +65,17 @@ markVist s = s {
   ,psPos2   = if checkWin (addVisited (boardVis s) (psPos s)) then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
 }
 
-updateIter s = if mod newIter 2 ==  0
-  then (addEnemy s (numIters s)) {
+updateIter s = if psWins s > 1 then 
+  if mod newIter 2 == 0 then 
+    (addEnemy s (numIters s)) {
+      numIters = newIter
+    }
+  else s {
     numIters = newIter
   }
-  else s{
-    numIters = newIter
-  }
-  where newIter = numIters s +1
+else
+  s
+    where newIter = numIters s +1
 
 
 --- >>> mod 4 3
