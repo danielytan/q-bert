@@ -17,7 +17,7 @@ module Model.Board
   , boardWinner
   , checkVis
   , addVisited
-  , checkWin
+  , checkFilled
   , enforceValidPos
 
     -- * Moves
@@ -92,8 +92,8 @@ newtype Vis = Vis
  }
  deriving (Eq, Ord)
 
-checkWin :: Vis -> Bool 
-checkWin v = length (visited v) >= (dim - 4) * (dim - 4)
+checkFilled :: Vis -> Bool 
+checkFilled v = length (visited v) >= (dim - 4) * (dim - 4)
 
 addVisited :: Vis -> Pos -> Vis
 addVisited v p = v

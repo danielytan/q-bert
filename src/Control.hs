@@ -16,7 +16,16 @@ import System.Random
 
 control :: PlayState -> BrickEvent n Tick -> EventM n (Next PlayState)
 control s ev = case ev of
-  AppEvent Tick                   -> if deathAnimation s > 0 then Brick.continue (deathAnim s) else if gameIsOver s then Brick.continue (test s) else if newLevel s > 0 then Brick.continue (nextLvl s) else Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
+  AppEvent Tick                   -> if deathAnimation s > 0 then 
+      Brick.continue (deathAnim s) 
+    else 
+      if gameIsOver s then 
+        Brick.continue (test s) 
+      else 
+        if newLevel s > 0 then 
+          Brick.continue (nextLvl s) 
+        else 
+          Brick.continue (stepEnemy s)--nextS s =<< liftIO (play O s)
   T.VtyEvent (V.EvKey V.KEnter _) -> Brick.continue (newGame s)
   T.VtyEvent (V.EvKey V.KUp   _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer UP s)
   T.VtyEvent (V.EvKey V.KDown _)  -> if paused s then Brick.continue s else Brick.continue (stepPlayer DOWN s)
@@ -27,7 +36,7 @@ control s ev = case ev of
 
 stepEnemy s = checkDeath (updateEnemy (updateIter s))
 
-stepPlayer dir s =  checkDeath (move dir s)
+stepPlayer dir s = checkWin (checkDeath (move dir s))
 
 deathAnim s = s {
     boardVis  = if (deathAnimation s + 1) `mod` 3 == 0 then Vis [] else boardVis s
@@ -58,16 +67,13 @@ newGame s = if gameIsOver s then s {
 --- -1
 ---
 markVist s = s {
-    boardVis = if hasWon then Vis [] else addVisited (boardVis s) (psPos s)
-  , psWins   = if hasWon then psWins s + 1 else psWins s
-  , newLevel = if hasWon then 1 else newLevel s
-  --,psPos    = Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) not working for some reason
-  , psPos2   = if hasWon then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
-  , points   = (points s) + 1
+    boardVis = addVisited visitedTiles p
+  , points   = if not (checkVis (visited visitedTiles) p) then pts + 1 else pts
 }
   where
-    visitedTiles = addVisited (boardVis s) (psPos s)
-    hasWon       = checkWin (visitedTiles)
+    p = psPos s
+    pts = points s
+    visitedTiles = boardVis s
 
 addPoints s i = s {
   points = (points s) + i
@@ -83,7 +89,7 @@ updateIter s = if psWins s > 1 then
   }
 else
   s
-    where newIter = numIters s +1
+    where newIter = numIters s + 1
 
 
 --- >>> mod 4 3
