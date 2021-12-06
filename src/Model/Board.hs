@@ -32,6 +32,7 @@ module Model.Board
 import Prelude hiding (init)
 import qualified Data.Map as M
 
+
 -------------------------------------------------------------------------------
 -- | Board --------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -88,24 +89,47 @@ positions = [ Pos r c | r <- [1..dim], c <- [1..dim] ]
 -- [True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True]
 newtype Vis = Vis
  {
-   visited :: [Pos]
+   visited :: M.Map Pos Int
  }
  deriving (Eq, Ord)
 
-checkFilled :: Vis -> Bool 
-checkFilled v = length (visited v) >= (dim - 4) * (dim - 4)
+checkFilled :: Vis -> Int -> Bool 
+checkFilled vis l = (length v >= (dim - 4) * (dim - 4)) && (testLvl l v)
+  where v = M.toList (visited vis)
+
+
+--- >>> testLvl 1 [(Pos {pRow = 1, pCol = 1}, 0)]
+--- False
+---
+testLvl :: Int -> [(Pos, Int)] -> Bool
+testLvl l = foldr f True
+  where f x y = ((snd x) >= l) && y
+
 
 addVisited :: Vis -> Pos -> Vis
-addVisited v p = v
-  { visited = alterVis (visited v) p}
+addVisited vis p = 
+  case M.lookup p v of
+    Just r  -> let v' = M.insert p (r+1) v in vis {visited = v'}
+    Nothing -> let v' = M.insert p 0 v in vis { visited = v' }--alterVis (visited v) p}
+  where 
+    v = visited vis
+    
 
 
-alterVis bs p = if not (checkVis bs p) then p:bs else bs
+--alterVis bs p = if not (checkVis bs p) then p:bs else bs
 
-checkVis :: [Pos] -> Pos -> Bool
+-- Given a list of position and a target check if the target is contained in the list
+{- checkVis :: [Pos] -> Pos -> Bool
 checkVis bs p
   = foldr
       (\ b -> (||) (pRow p == pRow b && pCol p == pCol b)) False bs
+ -}
+checkVis :: M.Map Pos Int -> Pos -> Bool
+checkVis m p
+  = foldr f False bs
+  where bs = M.toList m
+        f = (\ b -> (||) (pRow p == pRow (fst b) && pCol p == pCol (fst b)))
+  
 
 emptyPositions :: Board -> [Pos]
 emptyPositions board  = [ p | p <- positions, M.notMember p board]
