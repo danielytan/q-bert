@@ -54,12 +54,16 @@ setGoalColor i
   | i <= 1 = blue
   | i <= 3 = magenta
   | i <= 5 = white
+  | i <= 7 = yellow
+  | otherwise = white
 
 setUnvisitedColor :: Int -> Color
 setUnvisitedColor i
   | i <= 1 = yellow
   | i <= 3 = cyan
   | i <= 5 = green
+  | i <= 7 = green
+  | otherwise = magenta
 
 mid = div (dim + 1) 2
 restrict c = mid + abs (c - mid)
