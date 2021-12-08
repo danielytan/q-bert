@@ -147,7 +147,7 @@ checkWin s
         boardVis = Board.Vis M.empty
       , psWins   = psWins s + 1
       , newLevel = 1
-    --, psPos    = Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) not working for some reason
+      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
       , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
       , points   = (points s) + 100
     }
