@@ -10,6 +10,7 @@ import Text.ParserCombinators.ReadP (chainl)
 import Control.Concurrent (threadDelay)
 import qualified GHC.Base as Task
 import Model.Board (Characters)
+import qualified Data.Map as M
 
 -------------------------------------------------------------------------------
 -- | Ticks mark passing of time: a custom event that we constantly stream
@@ -71,7 +72,7 @@ init n = do
   , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
   , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2) 
   , beans    = []
-  , boardVis  = Board.Vis []
+  , boardVis  = Board.Vis M.empty
   , psResult = Board.Cont ()
   , lastMove = Player.DOWN
   , nextInteger = lst
@@ -143,16 +144,16 @@ changeLevel s i
 checkWin :: PlayState -> PlayState
 checkWin s
   | filled = s {
-        boardVis = Board.Vis []
+        boardVis = Board.Vis M.empty
       , psWins   = psWins s + 1
       , newLevel = 1
-    --, psPos    = Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) not working for some reason
+      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
       , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
       , points   = (points s) + 100
     }
   | otherwise = s
     where
-      filled = Board.checkFilled (boardVis s)
+      filled = Board.checkFilled (boardVis s) 0
 
 checkLose :: PlayState -> Bool
 checkLose s = isCurrEnemy s r c || isCurrSnake s r c
