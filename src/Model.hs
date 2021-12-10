@@ -154,6 +154,7 @@ checkWin s
       , psPos2    = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
       , points    = (points s) + 100
       , goalState = 0
+      , beans    = []
     }
   | otherwise = s
     where
