@@ -19,6 +19,7 @@ module Model.Board
   , addVisited
   , checkFilled
   , enforceValidPos
+  , nextState
 
     -- * Moves
   , up
@@ -98,22 +99,36 @@ checkFilled vis l = (length v >= (dim - 4) * (dim - 4)) && (testLvl l v)
   where v = M.toList (visited vis)
 
 
+--- >>> mod 1 5
+--- 1
+---
+
 --- >>> testLvl 1 [(Pos {pRow = 1, pCol = 1}, 0)]
 --- False
 ---
 testLvl :: Int -> [(Pos, Int)] -> Bool
 testLvl l = foldr f True
-  where f x y = ((snd x) >= l) && y
+  where f x y = ((snd x) == l) && y
 
+nextState :: Int -> Int-> Int
+nextState i l
+  | i < l = i + 1
+  | otherwise = 0
 
-addVisited :: Vis -> Pos -> Vis
-addVisited vis p = 
+--- >>> nextState 1 2
+--- 2
+---
+addVisited :: Vis -> Pos -> Int -> Vis
+addVisited vis p l= 
   case M.lookup p v of
-    Just r  -> let v' = M.insert p (r+1) v in vis {visited = v'}
+    Just r  -> let v' = M.insert p (nextState r l) v in vis {visited = v'}
     Nothing -> let v' = M.insert p 0 v in vis { visited = v' }--alterVis (visited v) p}
   where 
     v = visited vis
-    
+
+-- >>> mod 3 1
+-- 0
+--
 
 
 --alterVis bs p = if not (checkVis bs p) then p:bs else bs

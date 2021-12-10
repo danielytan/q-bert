@@ -67,13 +67,14 @@ newGame s = if gameIsOver s then s {
 --- -1
 ---
 markVist s = s {
-    boardVis = addVisited visitedTiles p 
+    boardVis = addVisited visitedTiles p gs
   , points   = if not (checkVis (visited visitedTiles) p) then pts + 1 else pts
 }
   where
     p = psPos s
     pts = points s
     visitedTiles = boardVis s
+    gs = goalState s
 
 addPoints s i = s {
   points = (points s) + i
