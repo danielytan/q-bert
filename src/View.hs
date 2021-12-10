@@ -66,7 +66,7 @@ setGoalColor :: Int -> Color
 setGoalColor i
   | i <= 1 = blue
   | i <= 3 = magenta
-  | i <= 5 = white
+  | i <= 5 = yellow
   | i <= 7 = yellow
   | otherwise = white
 
@@ -173,9 +173,9 @@ blockSnake = vBox [ str " ▁▁▁,,"
                   , str " ▌▁▁▁"
                   , str "▁▁▁▁▐"]
 blockBean = vBox [ str "______"
-              ,   str "|██████|"
-              ,   str "|( )( )|"
-              ,   str "|██████|"]
+              ,   str "▐██████▌"
+              ,   str "▐( )( )▌"
+              ,   str "▐██████▌"]
 
 blockSquid = vBox [ str " ______"
                 ,   str "|(.)(.)|"

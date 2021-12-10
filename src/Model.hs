@@ -87,7 +87,7 @@ init n = do
   , newLevel = 0
   , deathAnimation = 0
   , points = 0
-  , goalState = 1
+  , goalState = 0
   }
   return g
 --- >>> randomNum
@@ -112,6 +112,7 @@ gameOver s = s {
   , paused = True
   , deathAnimation = 1
   , points = 0
+  , goalState = 0
 }
 
 checkDeath :: PlayState -> PlayState
@@ -146,12 +147,13 @@ changeLevel s i
 checkWin :: PlayState -> PlayState
 checkWin s
   | filled = s {
-        boardVis = Board.Vis M.empty
-      , psWins   = psWins s + 1
-      , newLevel = 1
-      , psPos    = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
-      , psPos2   = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
-      , points   = (points s) + 100
+        boardVis  = Board.Vis M.empty
+      , psWins    = psWins s + 1
+      , newLevel  = 1
+      , psPos     = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
+      , psPos2    = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
+      , points    = (points s) + 100
+      , goalState = if (psWins s + 1 <= 5) then 0 else 1 
     }
   | otherwise = s
     where
