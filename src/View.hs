@@ -159,23 +159,23 @@ mkXO (Just GIB) = blockGib
 blockB, blockChar, blockSnake, blockBean, blockSquid, blockGoal :: Widget n
 blockB = vBox (replicate 5 (str "     "))
 blockChar = vBox [ str " ___   "
-                 , str "||  |_ "
-                 , str "||  __|"
-                 , str "|_ |_  "]
-blockSnake' = vBox [ str ",,___"
-                  , str " ___|"
-                  , str "|____"]
-blockChar' = vBox [ str "   ___ "
-                 , str " _|  || "
-                 , str "|__  || "
-                 , str "  _| _| "]
-blockSnake = vBox [ str "___,,"
-                  , str "|___"
-                  , str "____|"]
+                 , str "|███|_ "
+                 , str "|█████|"
+                 , str "|▙ |▙  "]
+blockSnake' = vBox [ str ",,▁▁▁"
+                  ,  str " ▁▁▁▌"
+                  ,  str "▐▁▁▁▁"]
+blockChar' = vBox [ str "  ___ "
+                 , str " _|███| "
+                 , str "|█████| "
+                 , str "  ▟| ▟| "]
+blockSnake = vBox [ str " ▁▁▁,,"
+                  , str " ▌▁▁▁"
+                  , str "▁▁▁▁▐"]
 blockBean = vBox [ str "______"
-              ,   str "| _  _ |"
+              ,   str "|██████|"
               ,   str "|( )( )|"
-              ,   str "|______|"]
+              ,   str "|██████|"]
 
 blockSquid = vBox [ str " ______"
                 ,   str "|(.)(.)|"
