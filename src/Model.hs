@@ -54,6 +54,7 @@ data PlayState = PS
   , newLevel :: Int
   , deathAnimation :: Int
   , points :: Int
+  , goalState :: Int
   } 
 
 init :: Int -> IO PlayState
@@ -86,6 +87,7 @@ init n = do
   , newLevel = 0
   , deathAnimation = 0
   , points = 0
+  , goalState = 1
   }
   return g
 --- >>> randomNum
@@ -153,7 +155,7 @@ checkWin s
     }
   | otherwise = s
     where
-      filled = Board.checkFilled (boardVis s) 0
+      filled = Board.checkFilled (boardVis s) (goalState s)
 
 checkLose :: PlayState -> Bool
 checkLose s = isCurrEnemy s r c || isCurrSnake s r c
@@ -186,6 +188,14 @@ checkVis bs p
 isVisited :: PlayState -> Int -> Int -> Bool
 isVisited s r c = Board.checkVis (Board.visited (boardVis s)) (Board.Pos r c)
 
+vState :: PlayState -> Int -> Int -> Int
+vState s r c =
+  case M.lookup p m of
+    Just v  -> v
+    Nothing -> -1
+  where 
+    m = Board.visited (boardVis s)
+    p = Board.Pos r c
 
 next :: PlayState -> Board.Result Board.Board -> Either (Board.Result ()) PlayState
 next s Board.Retry     = Right s

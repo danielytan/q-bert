@@ -36,8 +36,8 @@ mkCell s r c
   | deathAnimation s > 0 && ((Model.currModel s == MAIN && isCurrPlayer s (r+1) (c-1)) || (Model.currModel s == MAIN' && isCurrPlayer s (r+1) (c+1))) = fillDeathBox white black raw
   | newLevel s > 0 = raw
   | odd (gameIsOver' s) && gameIsOver s && r == 4 && c /= 5 = fillCell red raw
-  | r == 3 && c == dim-1 = fillCell goalColor raw
-  | isCurrPlayer s r c = fillCell goalColor raw
+  | r == 3 && c == dim-1 = fillCell (setGoalColor (psWins s)) raw
+  | isCurrPlayer s r c = fillCell curr_vcolor raw
   | isVisited s r c && (isCurrSnake s r c || isCurrEnemy s r c ) = fillEnemy goalColor red raw
   | isVisited s r c = fillCell goalColor raw
   | isCurrSnake s r c = fillEnemy unvisitedColor red raw
@@ -45,10 +45,21 @@ mkCell s r c
   | r >= restrict c = fillCell unvisitedColor raw
   | otherwise    = raw
   where
-    goalColor = setGoalColor (psWins s)
+    --goalColor = setGoalColor (psWins s)
     unvisitedColor = setUnvisitedColor (psWins s)
+    vcolor = vsColor (vState s r c) (psWins s) gs
+    curr_vcolor = vsColor (nextState (vState s r c) gs) (psWins s) gs
+    gs = goalState s
+    goalColor = vcolor
     raw = mkCell' s r c
 
+vsColor :: Int -> Int -> Int -> Color
+vsColor i w gs
+  | i == gs = setGoalColor w
+  | i == -1 = (setUnvisitedColor w)
+  | i ==  0 = brightGreen
+  | i ==  1 = brightCyan
+  | otherwise = setGoalColor w
 setGoalColor :: Int -> Color
 setGoalColor i
   | i <= 1 = blue
