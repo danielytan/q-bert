@@ -44,6 +44,7 @@ deathAnim s = s {
   , psPos    = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 1) (div (dim + 1) 2) else psPos s
   , psPos2   = if (deathAnimation s + 1) `mod` 3 == 0 then Pos (div (dim + 1) 2 + 3) (div (dim + 1) 2) else psPos2 s
   , paused = if (deathAnimation s + 1) `mod` 3 == 0 && not(gameIsOver s) then False else paused s
+  , psWins = if (deathAnimation s + 1) `mod` 3 == 0 && gameIsOver s then 0 else psWins s
 }
 
 nextLvl s = s {

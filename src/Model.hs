@@ -108,7 +108,6 @@ gameOver s = s {
   , psResult = Board.Cont ()
   , lastMove = Player.DOWN
   , numIters = 0
-  , psWins = 0
   , paused = True
   , deathAnimation = 1
   , points = 0
