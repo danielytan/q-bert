@@ -153,7 +153,7 @@ checkWin s
       , psPos     = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
       , psPos2    = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
       , points    = (points s) + 100
-      , goalState = if (psWins s + 1 <= 5) then 0 else 1 
+      , goalState = 0
     }
   | otherwise = s
     where

@@ -103,25 +103,26 @@ checkFilled vis l = (length v >= (dim - 4) * (dim - 4)) && (testLvl l v)
 --- 1
 ---
 
---- >>> testLvl 1 [(Pos {pRow = 1, pCol = 1}, 0)]
---- False
+--- >>> testLvl 2 [(Pos {pRow = 1, pCol = 1}, 1)]
+-- False
 ---
 testLvl :: Int -> [(Pos, Int)] -> Bool
 testLvl l = foldr f True
   where f x y = ((snd x) == l) && y
 
-nextState :: Int -> Int-> Int
-nextState i l
+nextState :: Int -> Int -> Int-> Int
+nextState level i l
   | i < l = i + 1
-  | otherwise = 0
+  | level <= 3 = 0
+  | otherwise = -1
 
---- >>> nextState 1 2
---- 2
+--- >>> nextState 2 (2) 1
+-- 1
 ---
-addVisited :: Vis -> Pos -> Int -> Vis
-addVisited vis p l= 
+addVisited :: Int -> Vis -> Pos -> Int -> Vis
+addVisited level vis p l= 
   case M.lookup p v of
-    Just r  -> let v' = M.insert p (nextState r l) v in vis {visited = v'}
+    Just r  -> let v' = M.insert p (nextState level r l) v in vis {visited = v'}
     Nothing -> let v' = M.insert p 0 v in vis { visited = v' }--alterVis (visited v) p}
   where 
     v = visited vis

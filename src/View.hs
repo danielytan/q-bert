@@ -48,17 +48,17 @@ mkCell s r c
     --goalColor = setGoalColor (psWins s)
     unvisitedColor = setUnvisitedColor (psWins s)
     vcolor = vsColor (vState s r c) (psWins s) gs
-    curr_vcolor = vsColor (nextState (vState s r c) gs) (psWins s) gs
+    curr_vcolor = vsColor (nextState (psWins s) (vState s r c) gs) (psWins s) gs
     gs = goalState s
     goalColor = vcolor
     raw = mkCell' s r c
 
 vsColor :: Int -> Int -> Int -> Color
 vsColor i w gs
-  | i == gs = setGoalColor w
   | i == -1 = (setUnvisitedColor w)
+  | i == gs || w <= 3 = setGoalColor w
   | i ==  0 = brightGreen
-  | i ==  1 = brightCyan
+  | i ==  1 = brightMagenta 
   | i ==  2 = brightBlue
   | otherwise = setGoalColor w
 
