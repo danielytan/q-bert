@@ -55,8 +55,8 @@ mkCell s r c
 
 vsColor :: Int -> Int -> Int -> Color
 vsColor i w gs
+  | i == gs = setGoalColor w
   | i == -1 = (setUnvisitedColor w)
-  | i == gs || w <= 3 = setGoalColor w
   | i ==  0 = brightGreen
   | i ==  1 = brightMagenta 
   | i ==  2 = brightBlue
@@ -74,8 +74,8 @@ setUnvisitedColor :: Int -> Color
 setUnvisitedColor i
   | i <= 1 = yellow
   | i <= 3 = cyan
-  | i <= 5 = green
-  | i <= 7 = green
+  | i <= 5 = cyan
+  | i <= 7 = magenta
   | otherwise = magenta
 
 mid = div (dim + 1) 2

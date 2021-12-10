@@ -152,7 +152,7 @@ checkWin s
       , psPos     = Board.Pos (div (Board.dim + 1) 2 + 1) (div (Board.dim + 1) 2) 
       , psPos2    = Board.Pos (div (Board.dim + 1) 2 + 3) (div (Board.dim + 1) 2)
       , points    = (points s) + 100
-      , goalState = 0
+      , goalState = if psWins s <= 3 then 0 else 1
       , beans    = []
     }
   | otherwise = s
