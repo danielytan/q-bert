@@ -113,7 +113,7 @@ testLvl l = foldr f True
 nextState :: Int -> Int-> Int
 nextState i l
   | i < l = i + 1
-  | otherwise = 0
+  | otherwise = -1
 
 --- >>> nextState 1 2
 --- 2
