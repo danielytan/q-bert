@@ -59,7 +59,9 @@ vsColor i w gs
   | i == -1 = (setUnvisitedColor w)
   | i ==  0 = brightGreen
   | i ==  1 = brightCyan
+  | i ==  2 = brightBlue
   | otherwise = setGoalColor w
+
 setGoalColor :: Int -> Color
 setGoalColor i
   | i <= 1 = blue
